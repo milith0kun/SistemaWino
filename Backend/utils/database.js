@@ -28,9 +28,12 @@ const initializeDatabase = () => {
             CREATE TABLE IF NOT EXISTS usuarios (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nombre TEXT NOT NULL,
+                apellido TEXT,
                 email TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
                 rol TEXT NOT NULL CHECK(rol IN ('ADMIN', 'EMPLEADO')),
+                cargo TEXT,
+                area TEXT,
                 activo BOOLEAN DEFAULT 1,
                 fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
             )
@@ -142,18 +145,18 @@ const insertDefaultUsers = async () => {
 
                 // Insertar usuario administrador
                 const insertAdmin = `
-                    INSERT INTO usuarios (nombre, email, password, rol)
-                    VALUES (?, ?, ?, ?)
+                    INSERT INTO usuarios (nombre, apellido, email, password, rol, cargo, area)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
                 `;
 
                 // Insertar usuario empleado
                 const insertEmpleado = `
-                    INSERT INTO usuarios (nombre, email, password, rol)
-                    VALUES (?, ?, ?, ?)
+                    INSERT INTO usuarios (nombre, apellido, email, password, rol, cargo, area)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
                 `;
 
                 db.serialize(() => {
-                    db.run(insertAdmin, ['Administrador', 'admin@hotel.com', adminPassword, 'ADMIN'], (err) => {
+                    db.run(insertAdmin, ['Administrador', 'Sistema', 'admin@hotel.com', adminPassword, 'ADMIN', 'Administrador', 'Administración'], (err) => {
                         if (err) {
                             console.error('Error insertando admin:', err.message);
                             reject(err);
@@ -162,7 +165,7 @@ const insertDefaultUsers = async () => {
                         console.log('Usuario administrador creado');
                     });
 
-                    db.run(insertEmpleado, ['Empleado Prueba', 'empleado@hotel.com', empleadoPassword, 'EMPLEADO'], (err) => {
+                    db.run(insertEmpleado, ['Empleado', 'Prueba', 'empleado@hotel.com', empleadoPassword, 'EMPLEADO', 'Empleado', 'Operaciones'], (err) => {
                         if (err) {
                             console.error('Error insertando empleado:', err.message);
                             reject(err);
