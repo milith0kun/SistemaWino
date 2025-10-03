@@ -26,13 +26,14 @@ function getGPSConfig() {
         // Consultar base de datos
         db.get('SELECT latitud, longitud, radio_metros FROM configuracion_gps WHERE id = 1', (err, row) => {
             if (err) {
-                console.error('Error obteniendo configuración GPS de BD:', err);
+                console.log('📍 Tabla configuracion_gps no existe, usando valores desde .env');
                 // Fallback a configuración por defecto
                 const fallbackConfig = {
                     latitude: CONFIG_UNIVERSAL.gps.kitchenLatitude,
                     longitude: CONFIG_UNIVERSAL.gps.kitchenLongitude,
                     radiusMeters: CONFIG_UNIVERSAL.gps.radiusMeters
                 };
+                console.log('📍 Configuración GPS desde .env:', fallbackConfig);
                 resolve(fallbackConfig);
             } else if (row) {
                 // Configuración desde BD
