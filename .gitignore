@@ -26,4 +26,15 @@ dist-ssr
 .env
 .env.local
 .env.production
+
+# AWS/SSH Keys - Security sensitive files
+*.pem
 edmil-key.pem
+wino.pem
+
+# PowerShell scripts con información sensible
+conectar-servidor.ps1
+
+# Build artifacts
+dist.tar.gz
+*.tar.gz
