@@ -20,12 +20,12 @@ object NetworkConfig {
     
     // Entornos predefinidos con sus URLs - Optimizado para producción
     val ENVIRONMENTS = mapOf(
-        "aws_production" to "http://18.220.8.226/", // AWS Producción (PRINCIPAL - SIEMPRE)
+        "aws_production" to "http://ec2-18-188-209-94.us-east-2.compute.amazonaws.com/api/", // AWS Producción (PRINCIPAL - SIEMPRE)
         "emulator" to "http://10.0.2.2:3000/" // Solo para desarrollo en emulador
     )
     
     // URL por defecto para producción
-    const val DEFAULT_BASE_URL = "http://18.220.8.226/"
+    const val DEFAULT_BASE_URL = "http://ec2-18-188-209-94.us-east-2.compute.amazonaws.com/api/"
     
     // Endpoints principales del backend HACCP según especificaciones
     object Endpoints {

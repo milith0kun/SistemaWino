@@ -7,9 +7,9 @@ package com.example.sistemadecalidad.utils
 object ProductionConfig {
     
     // CONFIGURACIÓN DEL SERVIDOR - CAMBIAR AQUÍ PARA DESPLIEGUE
-    const val SERVER_IP = "nice-breads-judge.loca.lt"  // Túnel público configurado
-    const val SERVER_PORT = ""                         // Puerto incluido en el dominio del túnel
-    const val USE_HTTPS = true                         // Túnel público usa HTTPS
+    const val SERVER_IP = "ec2-18-188-209-94.us-east-2.compute.amazonaws.com"  // Servidor AWS desplegado
+    const val SERVER_PORT = ""                         // Puerto 80 (incluido en dominio)
+    const val USE_HTTPS = false                        // Servidor usa HTTP (puerto 80)
     
     /**
      * Obtiene la URL completa del servidor de producción

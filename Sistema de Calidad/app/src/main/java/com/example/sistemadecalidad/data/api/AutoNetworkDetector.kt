@@ -23,7 +23,7 @@ class AutoNetworkDetector(private val context: Context) {
         private const val SERVER_PORT = "3000"
         
         // AWS Producción - ÚNICA URL válida
-        private const val AWS_PRODUCTION_URL = "http://18.220.8.226/"
+        private const val AWS_PRODUCTION_URL = "http://ec2-18-188-209-94.us-east-2.compute.amazonaws.com/api/"
     }
     
     private val httpClient = OkHttpClient.Builder()
