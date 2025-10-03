@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://ec2-18-188-209-94.us-east-2.compute.amazonaws.com:3000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://ec2-18-221-20-228.us-east-2.compute.amazonaws.com:3000/api';
 
 // Crear instancia de axios
 const api = axios.create({

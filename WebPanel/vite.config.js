@@ -9,7 +9,7 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/api': {
-        target: 'http://ec2-18-188-209-94.us-east-2.compute.amazonaws.com:3000',
+        target: 'http://ec2-18-221-20-228.us-east-2.compute.amazonaws.com:3000',
         changeOrigin: true
       }
     }
