@@ -52,7 +52,7 @@ async function detectEnvironment() {
 
 // Función para detectar puerto disponible automáticamente
 async function detectAvailablePort() {
-    // Detectar puerto desde .env o usar 80 por defecto (puerto HTTP estándar)
+    // Detectar puerto desde .env o usar 80 por defecto (puerto HTTP estándar en AWS)
     const port = process.env.EXTERNAL_PORT || process.env.PORT || 80;
     return parseInt(port);
 }
@@ -106,12 +106,12 @@ app.use((req, res, next) => {
     next();
 });
 
-// Rutas principales - usar las rutas sin prefijo /api
-app.use('/auth', require('./routes/auth'));
-app.use('/fichado', require('./routes/fichado'));
-app.use('/dashboard', require('./routes/dashboard'));
-app.use('/tiempo-real', require('./routes/tiempo-real'));
-app.use('/haccp', require('./routes/haccp'));
+// Rutas principales - con prefijo /api para compatibilidad con WebPanel y APK
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/fichado', require('./routes/fichado'));
+app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/tiempo-real', require('./routes/tiempo-real'));
+app.use('/api/haccp', require('./routes/haccp'));
 
 // Ruta de health check mejorada
 app.get('/health', (req, res) => {

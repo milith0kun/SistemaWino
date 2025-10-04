@@ -4,8 +4,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Archivos de entorno (comentado para que se suba)
-# .env
+# Archivos de entorno - NO SUBIR (contiene secretos)
+.env
+.env.local
+.env.production
 
 # Logs
 logs/
