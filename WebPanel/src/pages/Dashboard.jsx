@@ -62,15 +62,23 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const response = await dashboardService.getAdmin();
+      console.log('Dashboard response:', response);
       
-      if (response.success) {
-        setData(response.data);
+      if (response && response.success) {
+        // Asegurarse de que productos_rechazados_detalle sea un array
+        const dashboardData = {
+          ...response.data,
+          productos_rechazados_detalle: Array.isArray(response.data?.productos_rechazados_detalle) 
+            ? response.data.productos_rechazados_detalle 
+            : []
+        };
+        setData(dashboardData);
       } else {
-        setError(response.error || 'Error cargando dashboard');
+        setError(response?.error || 'Error cargando dashboard');
       }
     } catch (err) {
       setError('Error de conexión al servidor');
-      console.error(err);
+      console.error('Error loading dashboard:', err);
     } finally {
       setLoading(false);
     }

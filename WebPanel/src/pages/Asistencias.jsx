@@ -37,15 +37,18 @@ const Asistencias = () => {
       setLoading(true);
       setError('');
       const response = await fichadoService.getHistorial(mes, anio);
+      console.log('Asistencias response:', response);
       
-      if (response.success) {
-        setData(response.data || []);
+      if (response && response.success) {
+        setData(Array.isArray(response.data) ? response.data : []);
       } else {
-        setError(response.error || 'Error cargando asistencias');
+        setData([]);
+        setError(response?.error || 'Error cargando asistencias');
       }
     } catch (err) {
       setError('Error de conexión al servidor');
-      console.error(err);
+      setData([]);
+      console.error('Error loading asistencias:', err);
     } finally {
       setLoading(false);
     }

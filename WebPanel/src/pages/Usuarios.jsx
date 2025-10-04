@@ -68,15 +68,18 @@ const Usuarios = () => {
       setLoading(true);
       setError('');
       const response = await usuariosService.getAll();
+      console.log('Response usuarios:', response);
       
-      if (response.success) {
-        setUsuarios(response.data || []);
+      if (response && response.success) {
+        setUsuarios(Array.isArray(response.data) ? response.data : []);
       } else {
-        setError(response.error || 'Error cargando usuarios');
+        setUsuarios([]);
+        setError(response?.error || 'Error cargando usuarios');
       }
     } catch (err) {
       setError('Error de conexión al servidor');
-      console.error(err);
+      setUsuarios([]);
+      console.error('Error loading usuarios:', err);
     } finally {
       setLoading(false);
     }
