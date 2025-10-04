@@ -50,6 +50,17 @@ router.get('/proveedores-nc', authenticateToken, requireAdmin, async (req, res) 
 
     } catch (error) {
         console.error('Error obteniendo reporte de proveedores:', error);
+        
+        // Si la tabla no existe, devolver datos vacíos
+        if (error.code === 'SQLITE_ERROR' && error.message.includes('no such table')) {
+            return res.json({
+                success: true,
+                data: [],
+                total: 0,
+                message: 'Tabla de recepción de mercadería no creada aún'
+            });
+        }
+        
         res.status(500).json({
             success: false,
             error: 'Error al obtener reporte de proveedores'
@@ -90,14 +101,17 @@ router.get('/no-conformidades', authenticateToken, requireAdmin, async (req, res
             AND strftime('%m', r.fecha) = ?
             AND strftime('%Y', r.fecha) = ?
             ORDER BY r.fecha DESC, r.hora DESC
-        `, [mes.toString().padStart(2, '0'), anio]);
+        `, [mes.toString().padStart(2, '0'), anio]).catch(() => []);
+
+        // Verificar que sea un array
+        const conformidadesArray = Array.isArray(noConformidades) ? noConformidades : [];
 
         // Estadísticas
         const estadisticas = {
-            total_no_conformidades: noConformidades.length,
+            total_no_conformidades: conformidadesArray.length,
             por_tipo: {
-                temperatura: noConformidades.filter(nc => nc.observaciones && nc.observaciones.toLowerCase().includes('temperatura')).length,
-                calidad: noConformidades.filter(nc => nc.observaciones && (nc.observaciones.toLowerCase().includes('calidad') || nc.observaciones.toLowerCase().includes('aspecto'))).length,
+                temperatura: conformidadesArray.filter(nc => nc.observaciones && nc.observaciones.toLowerCase().includes('temperatura')).length,
+                calidad: conformidadesArray.filter(nc => nc.observaciones && (nc.observaciones.toLowerCase().includes('calidad') || nc.observaciones.toLowerCase().includes('aspecto'))).length,
                 otros: 0
             }
         };
@@ -105,12 +119,25 @@ router.get('/no-conformidades', authenticateToken, requireAdmin, async (req, res
 
         res.json({
             success: true,
-            data: noConformidades,
+            data: conformidadesArray,
             estadisticas
         });
 
     } catch (error) {
         console.error('Error obteniendo no conformidades:', error);
+        
+        // Si la tabla no existe, devolver datos vacíos
+        if (error.code === 'SQLITE_ERROR' && error.message.includes('no such table')) {
+            return res.json({
+                success: true,
+                data: [],
+                estadisticas: {
+                    total_no_conformidades: 0,
+                    por_tipo: { temperatura: 0, calidad: 0, otros: 0 }
+                }
+            });
+        }
+        
         res.status(500).json({
             success: false,
             error: 'Error al obtener no conformidades'
