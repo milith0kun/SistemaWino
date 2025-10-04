@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const { db } = require('../utils/database');
 
 // Middleware para verificar token JWT
-const authenticateToken = (req, res, next) => {
+const authenticateToken = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
@@ -14,54 +14,47 @@ const authenticateToken = (req, res, next) => {
         });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
+    try {
+        // Verificar token JWT
+        const user = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Verificar que el usuario aún existe y está activo
+        const row = await db.get(
+            'SELECT id, nombre, apellido, email, rol, cargo, area, activo FROM usuarios WHERE id = ? AND activo = 1',
+            [user.id]
+        );
+
+        if (!row) {
             return res.status(403).json({
                 success: false,
-                error: 'Token inválido',
-                message: 'El token proporcionado no es válido o ha expirado'
+                error: 'Usuario no válido',
+                message: 'El usuario no existe o está inactivo'
             });
         }
 
-        // Verificar que el usuario aún existe y está activo
-        db.get(
-            'SELECT id, nombre, apellido, email, rol, cargo, area, activo FROM usuarios WHERE id = ? AND activo = 1',
-            [user.id],
-            (err, row) => {
-                if (err) {
-                    console.error('Error verificando usuario:', err);
-                    return res.status(500).json({
-                        success: false,
-                        error: 'Error interno del servidor'
-                    });
-                }
+        // Agregar información completa del usuario al request
+        req.user = {
+            id: row.id,
+            nombre: row.nombre,
+            apellido: row.apellido,
+            email: row.email,
+            rol: row.rol,
+            cargo: row.cargo,
+            area: row.area
+        };
+        
+        // Alias para compatibilidad
+        req.usuario = req.user;
 
-                if (!row) {
-                    return res.status(403).json({
-                        success: false,
-                        error: 'Usuario no válido',
-                        message: 'El usuario no existe o está inactivo'
-                    });
-                }
-
-                // Agregar información completa del usuario al request
-                req.user = {
-                    id: row.id,
-                    nombre: row.nombre,
-                    apellido: row.apellido,
-                    email: row.email,
-                    rol: row.rol,
-                    cargo: row.cargo,
-                    area: row.area
-                };
-                
-                // Alias para compatibilidad
-                req.usuario = req.user;
-
-                next();
-            }
-        );
-    });
+        next();
+    } catch (err) {
+        console.error('Error en authenticateToken:', err);
+        return res.status(403).json({
+            success: false,
+            error: 'Token inválido',
+            message: 'El token proporcionado no es válido o ha expirado'
+        });
+    }
 };
 
 // Middleware para verificar rol de administrador

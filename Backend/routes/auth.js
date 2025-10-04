@@ -21,74 +21,56 @@ router.post('/login', async (req, res) => {
         }
 
         // Buscar usuario en la base de datos
-        db.get(
+        const user = await db.get(
             'SELECT * FROM usuarios WHERE email = ? AND activo = 1',
-            [email],
-            async (err, user) => {
-                if (err) {
-                    console.error('Error en login:', err);
-                    return res.status(500).json({
-                        success: false,
-                        error: 'Error interno del servidor'
-                    });
-                }
-
-                if (!user) {
-                    return res.status(401).json({
-                        success: false,
-                        error: 'Credenciales inválidas',
-                        message: 'Email o contraseña incorrectos'
-                    });
-                }
-
-                try {
-                    // Verificar contraseña
-                    const passwordMatch = await bcrypt.compare(password, user.password);
-                    
-                    if (!passwordMatch) {
-                        return res.status(401).json({
-                            success: false,
-                            error: 'Credenciales inválidas',
-                            message: 'Email o contraseña incorrectos'
-                        });
-                    }
-
-                    // Generar token JWT
-                    const token = jwt.sign(
-                        {
-                            id: user.id,
-                            email: user.email,
-                            rol: user.rol
-                        },
-                        process.env.JWT_SECRET,
-                        { expiresIn: '24h' }
-                    );
-
-                    // Respuesta exitosa
-                    res.json({
-                        success: true,
-                        message: 'Login exitoso',
-                        token,
-                        user: {
-                            id: user.id,
-                            nombre: user.nombre,
-                            apellido: user.apellido,
-                            email: user.email,
-                            rol: user.rol,
-                            cargo: user.cargo,
-                            area: user.area
-                        }
-                    });
-
-                } catch (bcryptError) {
-                    console.error('Error verificando contraseña:', bcryptError);
-                    return res.status(500).json({
-                        success: false,
-                        error: 'Error interno del servidor'
-                    });
-                }
-            }
+            [email]
         );
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                error: 'Credenciales inválidas',
+                message: 'Email o contraseña incorrectos'
+            });
+        }
+
+        // Verificar contraseña
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        
+        if (!passwordMatch) {
+            return res.status(401).json({
+                success: false,
+                error: 'Credenciales inválidas',
+                message: 'Email o contraseña incorrectos'
+            });
+        }
+
+        // Generar token JWT
+        const token = jwt.sign(
+            {
+                id: user.id,
+                email: user.email,
+                rol: user.rol
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        // Respuesta exitosa
+        res.json({
+            success: true,
+            message: 'Login exitoso',
+            token,
+            user: {
+                id: user.id,
+                nombre: user.nombre,
+                apellido: user.apellido,
+                email: user.email,
+                rol: user.rol,
+                cargo: user.cargo,
+                area: user.area
+            }
+        });
 
     } catch (error) {
         console.error('Error en login:', error);
