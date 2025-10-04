@@ -52,13 +52,13 @@ async function detectEnvironment() {
 
 // Función para detectar puerto disponible automáticamente
 async function detectAvailablePort() {
-    // Detectar puerto desde .env o usar 80 por defecto (puerto HTTP estándar en AWS)
-    const port = process.env.EXTERNAL_PORT || process.env.PORT || 80;
+    // Detectar puerto desde .env o usar 3000 por defecto (nginx hace proxy al 80)
+    const port = process.env.EXTERNAL_PORT || process.env.PORT || 3000;
     return parseInt(port);
 }
 
 // Configuración inicial del puerto (se actualizará automáticamente al iniciar)
-let PORT = process.env.EXTERNAL_PORT || process.env.PORT || 80;
+let PORT = process.env.EXTERNAL_PORT || process.env.PORT || 3000;
 const HOST = process.env.HOST || config.server.host || '0.0.0.0';
 
 // Token de ngrok desde variables de entorno
