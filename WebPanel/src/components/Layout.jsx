@@ -17,6 +17,8 @@ import {
   Avatar,
   Menu,
   MenuItem,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -41,6 +43,8 @@ const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [haccpOpen, setHaccpOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -333,7 +337,11 @@ const Layout = () => {
         }}
       >
         <Toolbar />
-        <Box sx={{ flexGrow: 1, p: 3 }}>
+        <Box sx={{ 
+          flexGrow: 1, 
+          p: { xs: 2, sm: 3 },
+          overflowX: 'hidden' 
+        }}>
           <Outlet />
         </Box>
         <Footer />

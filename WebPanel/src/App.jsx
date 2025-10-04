@@ -143,7 +143,7 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 10,
+          borderRadius: 12,
           padding: '10px 24px',
           fontSize: '0.9375rem',
           fontWeight: 500,
@@ -207,7 +207,7 @@ const theme = createTheme({
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 12,
           fontWeight: 500,
           fontSize: '0.8125rem',
         },
@@ -217,7 +217,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-root': {
-            borderRadius: 10,
+            borderRadius: 12,
             backgroundColor: '#FFFFFF',
             transition: 'all 0.2s',
             '&:hover': {
@@ -228,6 +228,20 @@ const theme = createTheme({
               boxShadow: '0 0 0 3px rgba(79, 70, 229, 0.1)',
             },
           },
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: 12,
+        },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
         },
       },
     },
