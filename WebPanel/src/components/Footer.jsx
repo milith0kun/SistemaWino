@@ -1,5 +1,5 @@
 import { Box, Typography, Link, Container, Divider } from '@mui/material';
-import { Email as EmailIcon, Business as BusinessIcon, Code as CodeIcon } from '@mui/icons-material';
+import { Email as EmailIcon, Business as BusinessIcon, Code as CodeIcon, Phone as PhoneIcon, LinkedIn as LinkedInIcon } from '@mui/icons-material';
 
 const Footer = () => {
   return (
@@ -85,6 +85,39 @@ const Footer = () => {
                 <BusinessIcon fontSize="small" />
                 <Typography variant="body2">ecosdelseo.com</Typography>
               </Link>
+              
+              <Link
+                href="https://www.linkedin.com/in/edmilsaire/"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  color: 'rgba(255,255,255,0.8)',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  justifyContent: { xs: 'center', md: 'flex-end' },
+                  '&:hover': {
+                    color: '#4ADE80',
+                  },
+                }}
+              >
+                <LinkedInIcon fontSize="small" />
+                <Typography variant="body2">linkedin.com/in/edmilsaire</Typography>
+              </Link>
+              
+              <Box
+                sx={{
+                  color: 'rgba(255,255,255,0.8)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  justifyContent: { xs: 'center', md: 'flex-end' },
+                }}
+              >
+                <PhoneIcon fontSize="small" />
+                <Typography variant="body2">+51 901246936</Typography>
+              </Box>
             </Box>
           </Box>
         </Box>
