@@ -32,10 +32,16 @@ const ControlCoccion = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await haccpService.getControlCoccion(mes, anio);
-      setRegistros(data);
+      const response = await haccpService.getControlCoccion(mes, anio);
+      if (response && response.success) {
+        setRegistros(Array.isArray(response.data) ? response.data : []);
+      } else {
+        setRegistros([]);
+        setError(response?.error || 'Error al cargar registros');
+      }
     } catch (err) {
       setError('Error al cargar registros de control de cocción');
+      setRegistros([]);
       console.error(err);
     } finally {
       setLoading(false);

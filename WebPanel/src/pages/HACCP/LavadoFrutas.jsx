@@ -32,10 +32,16 @@ const LavadoFrutas = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await haccpService.getLavadoFrutas(mes, anio);
-      setRegistros(data);
+      const response = await haccpService.getLavadoFrutas(mes, anio);
+      if (response && response.success) {
+        setRegistros(Array.isArray(response.data) ? response.data : []);
+      } else {
+        setRegistros([]);
+        setError(response?.error || 'Error al cargar registros');
+      }
     } catch (err) {
       setError('Error al cargar registros de lavado de frutas');
+      setRegistros([]);
       console.error(err);
     } finally {
       setLoading(false);

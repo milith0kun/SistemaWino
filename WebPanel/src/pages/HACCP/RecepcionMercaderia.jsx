@@ -43,14 +43,15 @@ const RecepcionMercaderia = () => {
       setError('');
       const response = await haccpService.getRecepcionMercaderia(mes, anio, tipo);
       
-      if (response.success) {
-        setData(response.data || []);
+      if (response && response.success) {
+        setData(Array.isArray(response.data) ? response.data : []);
       } else {
-        setError(response.error || 'Error cargando datos');
+        setError(response?.error || 'Error cargando datos');
       }
     } catch (err) {
       setError('Error de conexión al servidor');
       console.error(err);
+      setData([]);
     } finally {
       setLoading(false);
     }

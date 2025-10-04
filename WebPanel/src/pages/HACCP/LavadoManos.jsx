@@ -32,10 +32,16 @@ const LavadoManos = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await haccpService.getLavadoManos(mes, anio);
-      setRegistros(data);
+      const response = await haccpService.getLavadoManos(mes, anio);
+      if (response && response.success) {
+        setRegistros(Array.isArray(response.data) ? response.data : []);
+      } else {
+        setRegistros([]);
+        setError(response?.error || 'Error al cargar registros');
+      }
     } catch (err) {
       setError('Error al cargar registros de lavado de manos');
+      setRegistros([]);
       console.error(err);
     } finally {
       setLoading(false);

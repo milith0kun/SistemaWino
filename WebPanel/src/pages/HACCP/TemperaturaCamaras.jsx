@@ -32,10 +32,16 @@ const TemperaturaCamaras = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await haccpService.getTemperaturaCamaras(mes, anio);
-      setRegistros(data);
+      const response = await haccpService.getTemperaturaCamaras(mes, anio);
+      if (response && response.success) {
+        setRegistros(Array.isArray(response.data) ? response.data : []);
+      } else {
+        setRegistros([]);
+        setError(response?.error || 'Error al cargar registros');
+      }
     } catch (err) {
       setError('Error al cargar registros de temperatura de cámaras');
+      setRegistros([]);
       console.error(err);
     } finally {
       setLoading(false);
