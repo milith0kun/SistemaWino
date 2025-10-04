@@ -14,10 +14,10 @@ const bcrypt = require('bcryptjs');
 router.get('/', authenticateToken, async (req, res) => {
     try {
         console.log('=== GET /api/usuarios ===');
-        console.log('Usuario solicitante:', req.usuario);
+        console.log('Usuario solicitante:', req.user);
 
         // Verificar que sea administrador
-        if (req.usuario.rol !== 'ADMIN') {
+        if (req.user.rol !== 'ADMIN') {
             return res.status(403).json({
                 success: false,
                 error: 'Acceso denegado. Se requieren permisos de administrador.'
@@ -104,7 +104,7 @@ router.post('/', authenticateToken, async (req, res) => {
         console.log('=== POST /api/usuarios ===');
         
         // Verificar que sea administrador
-        if (req.usuario.rol !== 'ADMIN') {
+        if (req.user.rol !== 'ADMIN') {
             return res.status(403).json({
                 success: false,
                 error: 'Acceso denegado. Se requieren permisos de administrador.'
@@ -183,7 +183,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
         const { id } = req.params;
         
         // Verificar que sea administrador
-        if (req.usuario.rol !== 'ADMIN') {
+        if (req.user.rol !== 'ADMIN') {
             return res.status(403).json({
                 success: false,
                 error: 'Acceso denegado. Se requieren permisos de administrador.'
@@ -260,7 +260,7 @@ router.put('/:id/password', authenticateToken, async (req, res) => {
         const { password } = req.body;
 
         // Solo admin o el mismo usuario puede cambiar su contraseña
-        if (req.usuario.rol !== 'ADMIN' && req.usuario.id !== parseInt(id)) {
+        if (req.user.rol !== 'ADMIN' && req.user.id !== parseInt(id)) {
             return res.status(403).json({
                 success: false,
                 error: 'No tiene permisos para cambiar esta contraseña'
@@ -303,7 +303,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         const { id } = req.params;
 
         // Verificar que sea administrador
-        if (req.usuario.rol !== 'ADMIN') {
+        if (req.user.rol !== 'ADMIN') {
             return res.status(403).json({
                 success: false,
                 error: 'Acceso denegado. Se requieren permisos de administrador.'
@@ -311,7 +311,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         }
 
         // No permitir eliminar al propio usuario admin
-        if (req.usuario.id === parseInt(id)) {
+        if (req.user.id === parseInt(id)) {
             return res.status(400).json({
                 success: false,
                 error: 'No puedes desactivar tu propia cuenta'

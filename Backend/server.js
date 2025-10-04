@@ -113,6 +113,8 @@ app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/tiempo-real', require('./routes/tiempo-real'));
 app.use('/api/haccp', require('./routes/haccp'));
 app.use('/api/usuarios', require('./routes/usuarios'));
+app.use('/api/reportes', require('./routes/reportes'));
+app.use('/api/auditoria', require('./routes/auditoria'));
 
 // Ruta de health check mejorada
 app.get('/health', (req, res) => {
