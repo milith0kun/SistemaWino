@@ -1,5 +1,7 @@
 package com.example.sistemadecalidad.data.model
 
+import com.google.gson.annotations.SerializedName
+
 data class LavadoManos(
     val id: Int = 0,
     val mes: Int,
@@ -19,19 +21,13 @@ data class LavadoManos(
 )
 
 data class LavadoManosRequest(
-    val mes: Int,
-    val anio: Int,
-    val fecha: String,
-    val hora: String,
-    val area_estacion: String,
-    val turno: String,
-    val empleado_id: Int,
-    val nombres_apellidos: String,
-    val firma: String? = null,
-    val procedimiento_correcto: String,
-    val accion_correctiva: String? = null,
-    val supervisor_id: Int,
-    val supervisor_nombre: String
+    @SerializedName("empleado_id") val empleadoId: Int,
+    @SerializedName("area_estacion") val areaEstacion: String,
+    @SerializedName("turno") val turno: String?,
+    @SerializedName("firma") val firma: String? = null,
+    @SerializedName("procedimiento_correcto") val procedimientoCorrecto: String,
+    @SerializedName("accion_correctiva") val accionCorrectiva: String? = null,
+    @SerializedName("supervisor_id") val supervisorId: Int?
 )
 
 enum class AreaEstacion(val valor: String) {

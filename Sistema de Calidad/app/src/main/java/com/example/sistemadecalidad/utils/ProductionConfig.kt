@@ -12,15 +12,17 @@ object ProductionConfig {
     const val USE_HTTPS = false                        // Servidor usa HTTP (puerto 80)
     
     /**
-     * Obtiene la URL completa del servidor de producción
+     * Obtiene la URL completa del servidor de producción (incluye /api/)
      */
     fun getServerUrl(): String {
         val protocol = if (USE_HTTPS) "https" else "http"
-        return if (SERVER_PORT.isNotBlank()) {
+        val baseUrl = if (SERVER_PORT.isNotBlank()) {
             "$protocol://$SERVER_IP:$SERVER_PORT/"
         } else {
             "$protocol://$SERVER_IP/"
         }
+        // Agregar /api/ al final para que coincida con las rutas del backend
+        return baseUrl + "api/"
     }
     
     /**
