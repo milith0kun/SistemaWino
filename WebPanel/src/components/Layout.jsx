@@ -81,49 +81,103 @@ const Layout = () => {
   ];
 
   const drawer = (
-    <div>
-      <Toolbar sx={{ bgcolor: 'primary.main', color: 'white' }}>
-        <Typography variant="h6" noWrap component="div">
-          Sistema HACCP
-        </Typography>
+    <div style={{ background: '#1a1d2e', height: '100%', color: '#fff' }}>
+      <Toolbar sx={{ 
+        bgcolor: '#1a1d2e', 
+        color: 'white',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        py: 2
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{
+            width: 36,
+            height: 36,
+            borderRadius: '8px',
+            background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 700,
+            fontSize: '1.2rem'
+          }}>
+            W
+          </Box>
+          <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600 }}>
+            WINO HACCP
+          </Typography>
+        </Box>
       </Toolbar>
-      <Divider />
+      <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)' }} />
       
-      <List>
+      <List sx={{ px: 2, py: 1 }}>
         {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
+          <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
             <ListItemButton
               selected={location.pathname === item.path}
               onClick={() => navigate(item.path)}
+              sx={{
+                borderRadius: '8px',
+                color: location.pathname === item.path ? '#fff' : 'rgba(255,255,255,0.7)',
+                bgcolor: location.pathname === item.path ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
+                '&:hover': {
+                  bgcolor: location.pathname === item.path ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255,255,255,0.05)',
+                },
+                '&.Mui-selected': {
+                  bgcolor: 'rgba(99, 102, 241, 0.2)',
+                  borderLeft: '3px solid #6366F1',
+                  '&:hover': {
+                    bgcolor: 'rgba(99, 102, 241, 0.3)',
+                  }
+                }
+              }}
             >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+              <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }} />
             </ListItemButton>
           </ListItem>
         ))}
 
         {/* HACCP Collapsible Menu */}
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => setHaccpOpen(!haccpOpen)}>
-            <ListItemIcon>
+        <ListItem disablePadding sx={{ mb: 0.5 }}>
+          <ListItemButton 
+            onClick={() => setHaccpOpen(!haccpOpen)}
+            sx={{
+              borderRadius: '8px',
+              color: 'rgba(255,255,255,0.7)',
+              '&:hover': {
+                bgcolor: 'rgba(255,255,255,0.05)',
+              }
+            }}
+          >
+            <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
               <AssignmentIcon />
             </ListItemIcon>
-            <ListItemText primary="HACCP" />
-            {haccpOpen ? <ExpandLess /> : <ExpandMore />}
+            <ListItemText primary="HACCP" primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }} />
+            {haccpOpen ? <ExpandLess sx={{ color: 'inherit' }} /> : <ExpandMore sx={{ color: 'inherit' }} />}
           </ListItemButton>
         </ListItem>
         <Collapse in={haccpOpen} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
+          <List component="div" disablePadding sx={{ pl: 1 }}>
             {haccpItems.map((item) => (
               <ListItemButton
                 key={item.text}
-                sx={{ pl: 4 }}
+                sx={{ 
+                  pl: 5,
+                  py: 0.75,
+                  borderRadius: '8px',
+                  color: location.pathname === item.path ? '#fff' : 'rgba(255,255,255,0.6)',
+                  bgcolor: location.pathname === item.path ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+                  mb: 0.25,
+                  '&:hover': {
+                    bgcolor: location.pathname === item.path ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255,255,255,0.05)',
+                  }
+                }}
                 selected={location.pathname === item.path}
                 onClick={() => navigate(item.path)}
               >
                 <ListItemText 
                   primary={item.text} 
-                  primaryTypographyProps={{ variant: 'body2' }}
+                  primaryTypographyProps={{ fontSize: '0.85rem' }}
                 />
               </ListItemButton>
             ))}
@@ -131,17 +185,32 @@ const Layout = () => {
         </Collapse>
       </List>
 
-      <Divider />
+      <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', my: 1 }} />
 
-      <List>
+      <List sx={{ px: 2 }}>
         {bottomMenuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
+          <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
             <ListItemButton
               selected={location.pathname === item.path}
               onClick={() => navigate(item.path)}
+              sx={{
+                borderRadius: '8px',
+                color: location.pathname === item.path ? '#fff' : 'rgba(255,255,255,0.7)',
+                bgcolor: location.pathname === item.path ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
+                '&:hover': {
+                  bgcolor: location.pathname === item.path ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255,255,255,0.05)',
+                },
+                '&.Mui-selected': {
+                  bgcolor: 'rgba(99, 102, 241, 0.2)',
+                  borderLeft: '3px solid #6366F1',
+                  '&:hover': {
+                    bgcolor: 'rgba(99, 102, 241, 0.3)',
+                  }
+                }
+              }}
             >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+              <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -154,12 +223,16 @@ const Layout = () => {
       <CssBaseline />
       <AppBar
         position="fixed"
+        elevation={0}
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
+          bgcolor: '#FFFFFF',
+          color: '#1F2937',
+          borderBottom: '1px solid rgba(0,0,0,0.06)',
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ py: 1 }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -169,7 +242,7 @@ const Layout = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, color: '#1F2937', fontWeight: 600 }}>
             Panel Administrativo
           </Typography>
           
@@ -254,7 +327,7 @@ const Layout = () => {
           p: 3,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           minHeight: '100vh',
-          backgroundColor: '#f5f5f5',
+          backgroundColor: '#F8F9FA',
         }}
       >
         <Toolbar />

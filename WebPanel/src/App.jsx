@@ -21,51 +21,51 @@ import TemperaturaCamaras from './pages/HACCP/TemperaturaCamaras';
 
 import Layout from './components/Layout';
 
-// Tema minimalista profesional con colores suaves
+// Tema tipo UNIFYDATA - Dashboard profesional y limpio
 const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#4F46E5', // Indigo suave
-      light: '#6366F1',
-      dark: '#4338CA',
+      main: '#6366F1', // Indigo/Azul
+      light: '#818CF8',
+      dark: '#4F46E5',
       contrastText: '#FFFFFF',
     },
     secondary: {
-      main: '#10B981', // Verde esmeralda
-      light: '#34D399',
-      dark: '#059669',
+      main: '#4ADE80', // Verde menta
+      light: '#86EFAC',
+      dark: '#22C55E',
       contrastText: '#FFFFFF',
     },
     success: {
-      main: '#10B981',
+      main: '#4ADE80',
       light: '#D1FAE5',
-      dark: '#047857',
+      dark: '#22C55E',
     },
     error: {
-      main: '#EF4444',
+      main: '#F87171',
       light: '#FEE2E2',
-      dark: '#DC2626',
+      dark: '#EF4444',
     },
     warning: {
-      main: '#F59E0B',
+      main: '#FBBF24',
       light: '#FEF3C7',
-      dark: '#D97706',
+      dark: '#F59E0B',
     },
     info: {
-      main: '#3B82F6',
+      main: '#60A5FA',
       light: '#DBEAFE',
-      dark: '#2563EB',
+      dark: '#3B82F6',
     },
     background: {
-      default: '#F8FAFC',
+      default: '#F8F9FA',
       paper: '#FFFFFF',
     },
     text: {
-      primary: '#1E293B',
-      secondary: '#64748B',
+      primary: '#1F2937',
+      secondary: '#6B7280',
     },
-    divider: 'rgba(0, 0, 0, 0.06)',
+    divider: 'rgba(0, 0, 0, 0.04)',
   },
   typography: {
     fontFamily: [
@@ -165,12 +165,12 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
-          border: '1px solid rgba(0, 0, 0, 0.05)',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          borderRadius: 12,
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
+          border: '1px solid rgba(0, 0, 0, 0.04)',
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           '&:hover': {
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
             transform: 'translateY(-2px)',
           },
         },
