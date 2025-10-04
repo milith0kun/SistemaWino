@@ -58,6 +58,8 @@ fun RecepcionMercaderiaScreen(
     var accionCorrectiva by remember { mutableStateOf("") }
     var productoRechazado by remember { mutableStateOf(false) }
     
+    var showSuccessDialog by remember { mutableStateOf(false) }
+    
     val scrollState = rememberScrollState()
     val today = LocalDate.now()
     val now = LocalTime.now()
@@ -67,11 +69,10 @@ fun RecepcionMercaderiaScreen(
         haccpViewModel.cargarSupervisores(area = null) // Todos los supervisores
     }
     
-    // Manejar éxito del formulario
-    LaunchedEffect(uiState.isFormSuccess) {
-        if (uiState.isFormSuccess) {
-            haccpViewModel.resetFormSuccess()
-            onNavigateBack()
+    // Mostrar diálogo de éxito
+    LaunchedEffect(uiState.successMessage) {
+        if (uiState.successMessage != null) {
+            showSuccessDialog = true
         }
     }
     
@@ -410,6 +411,30 @@ fun RecepcionMercaderiaScreen(
             text = { Text(errorMessage ?: "Error desconocido") },
             confirmButton = {
                 TextButton(onClick = { haccpViewModel.clearMessages() }) {
+                    Text("Aceptar")
+                }
+            }
+        )
+    }
+    
+    // Success Dialog
+    if (showSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showSuccessDialog = false
+                haccpViewModel.clearMessages()
+                onNavigateBack()
+            },
+            title = { Text("✓ Registro Exitoso") },
+            text = { Text(uiState.successMessage ?: "Recepción de mercadería registrada correctamente") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showSuccessDialog = false
+                        haccpViewModel.clearMessages()
+                        onNavigateBack()
+                    }
+                ) {
                     Text("Aceptar")
                 }
             }

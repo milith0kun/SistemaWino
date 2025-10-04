@@ -7,10 +7,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
+import java.time.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,13 +70,9 @@ fun LavadoManosScreen(
     // Estados para los campos del formulario
     var mes by remember { mutableStateOf(LocalDate.now().monthValue) }
     var anio by remember { mutableStateOf(LocalDate.now().year) }
-    var productoQuimico by remember { mutableStateOf("Cloro") }
-    var concentracionProducto by remember { mutableStateOf("") }
-    var nombreFrutaVerdura by remember { mutableStateOf("") }
-    var lavadoAguaPotable by remember { mutableStateOf("C") }
-    var desinfeccionProductoQuimico by remember { mutableStateOf("C") }
-    var concentracionCorrect by remember { mutableStateOf("C") }
-    var tiempoDesinfeccion by remember { mutableStateOf("") }
+    var areaEstacion by remember { mutableStateOf("COCINA") }
+    var turno by remember { mutableStateOf("MAÑANA") }
+    var procedimientoCorrecto by remember { mutableStateOf("C") } // C = Conforme, NC = No Conforme
     var accionesCorrectivas by remember { mutableStateOf("") }
     
     val uiState by haccpViewModel.uiState.collectAsState()
@@ -84,14 +83,10 @@ fun LavadoManosScreen(
     val scrollState = rememberScrollState()
     
     // Validación del formulario
-    val isFormValid = productoQuimico.isNotEmpty() && 
-                     concentracionProducto.isNotEmpty() &&
-                     nombreFrutaVerdura.isNotEmpty() &&
-                     tiempoDesinfeccion.isNotEmpty() &&
-                     (tiempoDesinfeccion.toIntOrNull() ?: 0) in 0..10 &&
-                     // Si alguno es NC, se requiere acciones correctivas
-                     ((lavadoAguaPotable == "C" && desinfeccionProductoQuimico == "C" && concentracionCorrect == "C") || 
-                      accionesCorrectivas.isNotEmpty())
+    val isFormValid = areaEstacion.isNotEmpty() && 
+                     turno.isNotEmpty() &&
+                     // Si es NC, se requiere acciones correctivas
+                     (procedimientoCorrecto == "C" || accionesCorrectivas.isNotEmpty())
     
     // Mostrar diálogo de éxito
     LaunchedEffect(uiState.successMessage) {
@@ -122,22 +117,23 @@ fun LavadoManosScreen(
         ) {
             // Título
             Text(
-                text = "REGISTRO HACCP CONTROL DE LAVADO Y DESINFECCIÓN DE FRUTAS Y VERDURAS",
+                text = "REGISTRO HACCP CONTROL DE LAVADO Y DESINFECCIÓN DE MANOS",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
             
             Divider()
             
-            // DATOS DEL SUPERVISOR (automático del usuario logueado)
+            // DATOS DEL EMPLEADO (automático del usuario logueado)
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("SUPERVISOR", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                    Text("EMPLEADO QUE SE LAVA LAS MANOS", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
                     Text("Nombre: ${usuario?.nombreCompleto ?: "..."}")
                     Text("Cargo: ${usuario?.cargo ?: "..."}")
-                    Text("Área: ${usuario?.area ?: "..."}")
+                    Text("Fecha: ${LocalDate.now()}")
+                    Text("Hora: ${LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))}")
                 }
             }
             
@@ -157,116 +153,110 @@ fun LavadoManosScreen(
             
             Divider()
             
-            // PRODUCTO QUÍMICO
-            Text("PRODUCTO QUÍMICO", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            // ÁREA O ESTACIÓN
+            Text("ÁREA O ESTACIÓN *", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
             
-            OutlinedTextField(
-                value = productoQuimico,
-                onValueChange = { productoQuimico = it },
-                label = { Text("Producto Químico (ej: Cloro)") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-            
-            OutlinedTextField(
-                value = concentracionProducto,
-                onValueChange = { concentracionProducto = it },
-                label = { Text("Concentración (ppm o %)") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                supportingText = { Text("Ejemplo: 100ppm, 0.5%, etc.") }
-            )
-            
-            Divider()
-            
-            // FRUTA/VERDURA
-            Text("NOMBRE FRUTA/VERDURA *", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-            
-            OutlinedTextField(
-                value = nombreFrutaVerdura,
-                onValueChange = { nombreFrutaVerdura = it },
-                label = { Text("Tipo de fruta o verdura") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                placeholder = { Text("Ej: Lechugas, Tomates, Zanahorias") }
-            )
-            
-            Divider()
-            
-            // CONFORMIDAD DEL PROCESO
-            Text("CONFORMIDAD DEL PROCESO", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-            
-            // Lavado con agua potable
-            Text("Lavado con agua potable:", style = MaterialTheme.typography.bodyMedium)
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterChip(
-                    selected = lavadoAguaPotable == "C",
-                    onClick = { lavadoAguaPotable = "C" },
-                    label = { Text("✓ Conforme") },
+                    selected = areaEstacion == "COCINA",
+                    onClick = { areaEstacion = "COCINA" },
+                    label = { Text("Cocina") },
                     modifier = Modifier.weight(1f)
                 )
                 FilterChip(
-                    selected = lavadoAguaPotable == "NC",
-                    onClick = { lavadoAguaPotable = "NC" },
-                    label = { Text("✗ No Conforme") },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            
-            // Desinfección con producto químico
-            Text("Desinfección con producto químico:", style = MaterialTheme.typography.bodyMedium)
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                FilterChip(
-                    selected = desinfeccionProductoQuimico == "C",
-                    onClick = { desinfeccionProductoQuimico = "C" },
-                    label = { Text("✓ Conforme") },
-                    modifier = Modifier.weight(1f)
-                )
-                FilterChip(
-                    selected = desinfeccionProductoQuimico == "NC",
-                    onClick = { desinfeccionProductoQuimico = "NC" },
-                    label = { Text("✗ No Conforme") },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            
-            // Concentración del producto químico
-            Text("Concentración del producto químico:", style = MaterialTheme.typography.bodyMedium)
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                FilterChip(
-                    selected = concentracionCorrect == "C",
-                    onClick = { concentracionCorrect = "C" },
-                    label = { Text("✓ Conforme") },
-                    modifier = Modifier.weight(1f)
-                )
-                FilterChip(
-                    selected = concentracionCorrect == "NC",
-                    onClick = { concentracionCorrect = "NC" },
-                    label = { Text("✗ No Conforme") },
+                    selected = areaEstacion == "SALON",
+                    onClick = { areaEstacion = "SALON" },
+                    label = { Text("Salón") },
                     modifier = Modifier.weight(1f)
                 )
             }
             
             Divider()
             
-            // TIEMPO DE DESINFECCIÓN
-            Text("TIEMPO DE DESINFECCIÓN *", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            // TURNO
+            Text("TURNO *", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
             
-            OutlinedTextField(
-                value = tiempoDesinfeccion,
-                onValueChange = { tiempoDesinfeccion = it },
-                label = { Text("Tiempo (minutos)") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                supportingText = { Text("Debe estar entre 0 - 10 minutos") }
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(
+                    selected = turno == "MAÑANA",
+                    onClick = { turno = "MAÑANA" },
+                    label = { Text("☀️ Mañana") },
+                    modifier = Modifier.weight(1f)
+                )
+                FilterChip(
+                    selected = turno == "TARDE",
+                    onClick = { turno = "TARDE" },
+                    label = { Text("🌙 Tarde") },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            
+            Divider()
+            
+            // PROCEDIMIENTO DE LAVADO
+            Text("PROCEDIMIENTO DE LAVADO DE MANOS", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            Text(
+                "Evaluar si el personal siguió correctamente el procedimiento de lavado y desinfección de manos",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = if (procedimientoCorrecto == "C") 
+                        MaterialTheme.colorScheme.primaryContainer 
+                    else 
+                        MaterialTheme.colorScheme.errorContainer
+                )
+            ) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        "Seleccione la evaluación:",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        FilterChip(
+                            selected = procedimientoCorrecto == "C",
+                            onClick = { procedimientoCorrecto = "C" },
+                            label = { 
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text("✓ CONFORME", fontWeight = FontWeight.Bold)
+                                    Text("Procedimiento correcto", style = MaterialTheme.typography.bodySmall)
+                                }
+                            },
+                            modifier = Modifier.weight(1f),
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = Color(0xFF4CAF50)
+                            )
+                        )
+                        FilterChip(
+                            selected = procedimientoCorrecto == "NC",
+                            onClick = { procedimientoCorrecto = "NC" },
+                            label = { 
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text("✗ NO CONFORME", fontWeight = FontWeight.Bold)
+                                    Text("Requiere repetir", style = MaterialTheme.typography.bodySmall)
+                                }
+                            },
+                            modifier = Modifier.weight(1f),
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = Color(0xFFEF5350)
+                            )
+                        )
+                    }
+                }
+            }
             
             Divider()
             
             // ACCIONES CORRECTIVAS
-            Text("ACCIONES CORRECTIVAS", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            Text("ACCIÓN CORRECTIVA", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
             
-            val requiereAcciones = lavadoAguaPotable == "NC" || desinfeccionProductoQuimico == "NC" || concentracionCorrect == "NC"
+            val requiereAcciones = procedimientoCorrecto == "NC"
             
             if (requiereAcciones) {
                 Text(
@@ -294,10 +284,10 @@ fun LavadoManosScreen(
                     usuario?.let { user ->
                         haccpViewModel.registrarLavadoManos(
                             empleadoId = user.id,
-                            area = user.rol,
-                            turno = "Mañana",
-                            firma = user.nombre,
-                            procedimientoCorrecto = if (lavadoAguaPotable == "C" && desinfeccionProductoQuimico == "C" && concentracionCorrect == "C") "Sí" else "No",
+                            area = areaEstacion,
+                            turno = turno,
+                            firma = user.nombreCompleto,
+                            procedimientoCorrecto = procedimientoCorrecto,
                             accionCorrectiva = accionesCorrectivas.ifEmpty { null },
                             supervisorId = null
                         )
@@ -313,7 +303,7 @@ fun LavadoManosScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                 }
-                Text("Registrar Control de Lavado y Desinfección")
+                Text("Registrar Control de Lavado de Manos")
             }
             
             // Mostrar error si existe
@@ -341,7 +331,7 @@ fun LavadoManosScreen(
                 onNavigateBack()
             },
             title = { Text("✓ Registro Exitoso") },
-            text = { Text(uiState.successMessage ?: "Control de lavado de frutas registrado correctamente") },
+            text = { Text(uiState.successMessage ?: "Control de lavado de manos registrado correctamente") },
             confirmButton = {
                 TextButton(
                     onClick = {
