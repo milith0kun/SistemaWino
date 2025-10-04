@@ -232,6 +232,55 @@ class FichadoViewModel /* @Inject constructor( */ (
     }
     
     /**
+     * Obtener y guardar configuración GPS del backend
+     * Debe llamarse al iniciar la app para sincronizar la ubicación configurada por Admin
+     */
+    fun sincronizarConfiguracionGPS() {
+        viewModelScope.launch {
+            android.util.Log.d("FichadoViewModel", "Sincronizando configuración GPS del backend...")
+            
+            val token = getAuthToken()
+            if (token == null) {
+                android.util.Log.w("FichadoViewModel", "No hay token, no se puede sincronizar GPS")
+                return@launch
+            }
+            
+            try {
+                fichadoRepository.obtenerConfiguracionGPS(token).collect { result ->
+                    result.fold(
+                        onSuccess = { response ->
+                            if (response.success && response.data != null) {
+                                val data = response.data
+                                android.util.Log.i("FichadoViewModel", "Configuración GPS obtenida: lat=${data.latitud}, lon=${data.longitud}, radio=${data.radioMetros}")
+                                
+                                // Guardar en PreferencesManager si tenemos valores válidos
+                                if (data.latitud != null && data.longitud != null && data.radioMetros != null) {
+                                    preferencesManager.saveLocationConfig(
+                                        latitude = data.latitud,
+                                        longitude = data.longitud,
+                                        radius = data.radioMetros,
+                                        gpsEnabled = true // Siempre activado desde el backend
+                                    )
+                                    android.util.Log.i("FichadoViewModel", "✅ Configuración GPS guardada localmente")
+                                } else {
+                                    android.util.Log.w("FichadoViewModel", "Configuración GPS incompleta, usando valores por defecto")
+                                }
+                            } else {
+                                android.util.Log.w("FichadoViewModel", "No hay configuración GPS en el backend: ${response.message}")
+                            }
+                        },
+                        onFailure = { exception ->
+                            android.util.Log.e("FichadoViewModel", "Error al obtener configuración GPS: ${exception.message}")
+                        }
+                    )
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("FichadoViewModel", "Excepción al sincronizar GPS: ${e.message}")
+            }
+        }
+    }
+    
+    /**
      * Limpiar mensajes de error
      */
     fun clearError() {

@@ -28,6 +28,7 @@ import {
   People as PeopleIcon,
   Assessment as AssessmentIcon,
   History as HistoryIcon,
+  Settings as SettingsIcon,
   AccountCircle,
   Logout,
   ExpandLess,
@@ -73,6 +74,7 @@ const Layout = () => {
 
   const haccpItems = [
     { text: 'Recepción Mercadería', path: '/haccp/recepcion-mercaderia' },
+    { text: 'Recepción Abarrotes', path: '/haccp/recepcion-abarrotes' },
     { text: 'Control Cocción', path: '/haccp/control-coccion' },
     { text: 'Lavado Frutas', path: '/haccp/lavado-frutas' },
     { text: 'Lavado Manos', path: '/haccp/lavado-manos' },
@@ -83,6 +85,7 @@ const Layout = () => {
     { text: 'Usuarios', icon: <PeopleIcon />, path: '/usuarios' },
     { text: 'Reportes', icon: <AssessmentIcon />, path: '/reportes' },
     { text: 'Auditoría', icon: <HistoryIcon />, path: '/auditoria' },
+    { text: 'Configuración', icon: <SettingsIcon />, path: '/configuracion' },
   ];
 
   const drawer = (
@@ -105,10 +108,10 @@ const Layout = () => {
             fontWeight: 700,
             fontSize: '1.2rem'
           }}>
-            W
+            H
           </Box>
           <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600 }}>
-            WINO HACCP
+            SISTEMA HACCP
           </Typography>
         </Box>
       </Toolbar>

@@ -115,8 +115,10 @@ app.use('/api/haccp', require('./routes/haccp'));
 app.use('/api/usuarios', require('./routes/usuarios'));
 app.use('/api/reportes', require('./routes/reportes'));
 app.use('/api/auditoria', require('./routes/auditoria'));
+app.use('/api/health', require('./routes/health'));
+app.use('/api/configuracion', require('./routes/configuracion'));
 
-// Ruta de health check mejorada
+// Ruta de health check sin prefijo (para compatibilidad)
 app.get('/health', (req, res) => {
     res.json({
         status: 'OK',

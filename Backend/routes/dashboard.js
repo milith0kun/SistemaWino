@@ -1,6 +1,7 @@
 const express = require('express');
 const { db } = require('../utils/database');
 const { authenticateToken, requireAdmin } = require('../middleware/auth');
+const { formatDateForDB, formatTimeForDB, formatDateForDisplay } = require('../utils/timeUtils');
 
 const router = express.Router();
 
@@ -8,15 +9,11 @@ const router = express.Router();
 router.get('/hoy', authenticateToken, (req, res) => {
     try {
         const usuarioId = req.user.id;
-        const ahora = new Date();
-        const fecha = ahora.toISOString().split('T')[0];
-        const horaActual = ahora.toTimeString().split(' ')[0];
-        const fechaCompleta = ahora.toLocaleDateString('es-ES', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+        
+        // Usar zona horaria de Perú para consistencia
+        const fecha = formatDateForDB();
+        const horaActual = formatTimeForDB();
+        const fechaCompleta = formatDateForDisplay();
 
         // Buscar el ÚLTIMO registro del día (soportar múltiples turnos)
         db.get(
@@ -323,22 +320,83 @@ router.get('/admin', authenticateToken, requireAdmin, (req, res) => {
                     });
                 }
 
-                const dashboard = {
-                    fecha,
-                    estadisticas_hoy: {
-                        total_empleados: statsHoy.total_empleados || 0,
-                        empleados_presentes: statsHoy.empleados_presentes || 0,
-                        empleados_salieron: statsHoy.empleados_salieron || 0,
-                        promedio_horas_hoy: statsHoy.promedio_horas_hoy || 0,
-                        porcentaje_asistencia: statsHoy.total_empleados > 0 ? 
-                            Math.round((statsHoy.empleados_presentes / statsHoy.total_empleados) * 100) : 0
-                    },
-                    empleados_hoy: empleados
-                };
+                // Obtener controles HACCP hoy
+                const controlesHoyQuery = `
+                    SELECT COUNT(*) as total FROM (
+                        SELECT fecha FROM recepcion_mercaderia WHERE fecha = ?
+                        UNION ALL
+                        SELECT fecha FROM recepcion_abarrotes WHERE fecha = ?
+                        UNION ALL
+                        SELECT fecha FROM control_coccion WHERE fecha = ?
+                        UNION ALL
+                        SELECT fecha FROM lavado_frutas WHERE fecha = ?
+                        UNION ALL
+                        SELECT fecha FROM lavado_manos WHERE fecha = ?
+                        UNION ALL
+                        SELECT fecha FROM temperatura_camaras WHERE fecha = ?
+                    )
+                `;
 
-                res.json({
-                    success: true,
-                    data: dashboard
+                db.get(controlesHoyQuery, [fecha, fecha, fecha, fecha, fecha, fecha], (err, controlesHoy) => {
+                    const totalControlesHoy = controlesHoy ? controlesHoy.total : 0;
+
+                    // Obtener no conformidades del mes actual
+                    const mesActual = new Date().getMonth() + 1;
+                    const anioActual = new Date().getFullYear();
+                    
+                    const noConformidadesQuery = `
+                        SELECT COUNT(*) as total FROM recepcion_mercaderia 
+                        WHERE strftime('%m', fecha) = ? AND strftime('%Y', fecha) = ? 
+                        AND conforme = 'NO'
+                    `;
+
+                    db.get(noConformidadesQuery, [mesActual.toString().padStart(2, '0'), anioActual.toString()], (err, noConformidades) => {
+                        const totalNoConformidades = noConformidades ? noConformidades.total : 0;
+
+                        // Obtener productos rechazados esta semana
+                        const inicioSemana = new Date();
+                        inicioSemana.setDate(inicioSemana.getDate() - inicioSemana.getDay());
+                        const fechaInicioSemana = inicioSemana.toISOString().split('T')[0];
+
+                        const productosRechazadosQuery = `
+                            SELECT 
+                                nombre_producto,
+                                nombre_proveedor,
+                                fecha,
+                                observaciones
+                            FROM recepcion_mercaderia 
+                            WHERE fecha >= ? AND conforme = 'NO'
+                            ORDER BY fecha DESC
+                            LIMIT 10
+                        `;
+
+                        db.all(productosRechazadosQuery, [fechaInicioSemana], (err, productosRechazados) => {
+                            const dashboard = {
+                                fecha,
+                                estadisticas_hoy: {
+                                    total_empleados: statsHoy.total_empleados || 0,
+                                    empleados_presentes: statsHoy.empleados_presentes || 0,
+                                    empleados_salieron: statsHoy.empleados_salieron || 0,
+                                    promedio_horas_hoy: statsHoy.promedio_horas_hoy || 0,
+                                    porcentaje_asistencia: statsHoy.total_empleados > 0 ? 
+                                        Math.round((statsHoy.empleados_presentes / statsHoy.total_empleados) * 100) : 0
+                                },
+                                empleados_hoy: empleados || [],
+                                controles_hoy: totalControlesHoy,
+                                no_conformidades_mes: totalNoConformidades,
+                                productos_rechazados_detalle: productosRechazados || [],
+                                asistencia_hoy: {
+                                    presentes: statsHoy.empleados_presentes || 0,
+                                    total: statsHoy.total_empleados || 0
+                                }
+                            };
+
+                            res.json({
+                                success: true,
+                                data: dashboard
+                            });
+                        });
+                    });
                 });
             });
         });

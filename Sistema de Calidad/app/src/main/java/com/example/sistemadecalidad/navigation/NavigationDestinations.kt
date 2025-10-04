@@ -12,7 +12,8 @@ object NavigationDestinations {
     const val ANALITICA = "analitica"
     const val NETWORK_SETTINGS = "network_settings"
     const val HACCP_MENU = "haccp_menu"
-    const val LOCATION_SETTINGS = "location_settings"
+    const val ABOUT = "about"
+    // const val LOCATION_SETTINGS = "location_settings" // ELIMINADO - configuración GPS solo desde WebPanel
     
     // Rutas de formularios HACCP (solo los que existen en la base de datos)
     const val RECEPCION_MERCADERIA = "recepcion_mercaderia"

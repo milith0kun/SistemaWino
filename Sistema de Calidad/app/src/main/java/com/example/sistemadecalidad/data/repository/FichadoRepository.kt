@@ -214,4 +214,35 @@ class FichadoRepository /* @Inject constructor */ (
             emit(Result.failure(e))
         }
     }
+    
+    /**
+     * Obtener configuración GPS del backend
+     * La app debe llamar a este endpoint al iniciar para obtener la configuración actualizada
+     */
+    suspend fun obtenerConfiguracionGPS(
+        token: String
+    ): Flow<Result<com.example.sistemadecalidad.data.api.ConfiguracionGPSResponse>> = flow {
+        try {
+            val bearerToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
+            
+            android.util.Log.d("FichadoRepository", "Obteniendo configuración GPS del backend...")
+            val response = apiService.obtenerConfiguracionGPS(bearerToken)
+            
+            android.util.Log.d("FichadoRepository", "Response code GPS config: ${response.code()}")
+            
+            if (response.isSuccessful) {
+                val gpsResponse = response.body()
+                if (gpsResponse != null) {
+                    emit(Result.success(gpsResponse))
+                } else {
+                    emit(Result.failure(Exception("Respuesta vacía del servidor")))
+                }
+            } else {
+                emit(Result.failure(Exception("Error HTTP: ${response.code()} - ${response.message()}")))
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("FichadoRepository", "Excepción al obtener GPS config: ${e.message}")
+            emit(Result.failure(e))
+        }
+    }
 }

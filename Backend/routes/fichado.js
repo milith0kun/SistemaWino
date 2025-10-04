@@ -2,6 +2,7 @@ const express = require('express');
 const { db } = require('../utils/database');
 const { authenticateToken } = require('../middleware/auth');
 const { requireGPSValidation, validateGPSLocation } = require('../utils/gpsValidation');
+const { formatDateForDB, formatTimeForDB } = require('../utils/timeUtils');
 
 const router = express.Router();
 
@@ -10,8 +11,10 @@ router.post('/entrada', authenticateToken, requireGPSValidation(true), (req, res
     try {
         const { metodo = 'GPS', latitud, longitud, codigo_qr, observaciones } = req.body;
         const usuarioId = req.user.id;
-        const fecha = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-        const horaEntrada = new Date().toTimeString().split(' ')[0]; // HH:MM:SS
+        
+        // Usar zona horaria de Perú para consistencia
+        const fecha = formatDateForDB();
+        const horaEntrada = formatTimeForDB();
 
         // Verificar si ya tiene entrada SIN SALIDA (no completada)
         db.get(
@@ -98,8 +101,10 @@ router.post('/salida', authenticateToken, requireGPSValidation(false), (req, res
     try {
         const { latitud, longitud, observaciones } = req.body;
         const usuarioId = req.user.id;
-        const fecha = new Date().toISOString().split('T')[0];
-        const horaSalida = new Date().toTimeString().split(' ')[0];
+        
+        // Usar zona horaria de Perú para consistencia
+        const fecha = formatDateForDB();
+        const horaSalida = formatTimeForDB();
 
         // Buscar la ÚLTIMA entrada sin salida del día (para soportar múltiples turnos)
         db.get(

@@ -11,16 +11,19 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.sistemadecalidad"
+        applicationId = "com.sistemahaccp.calidad"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+        
+        // Nombre profesional para el APK
+        setProperty("archivesBaseName", "SistemaHACCP-v${versionName}")
     }
 
     buildTypes {

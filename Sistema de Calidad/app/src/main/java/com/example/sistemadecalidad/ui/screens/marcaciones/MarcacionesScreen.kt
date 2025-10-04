@@ -35,6 +35,7 @@ import com.example.sistemadecalidad.data.local.PreferencesManager
 import com.example.sistemadecalidad.ui.viewmodel.FichadoViewModel
 import com.example.sistemadecalidad.utils.LocationManager
 import com.google.gson.Gson
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import java.text.SimpleDateFormat
 import java.util.*
@@ -48,8 +49,8 @@ fun MarcacionesScreen(
     fichadoViewModel: FichadoViewModel, // = hiltViewModel()
     onNavigateToDashboard: () -> Unit = {},
     onNavigateToHistorial: () -> Unit = {},
-    onNavigateToHaccp: () -> Unit = {},
-    onNavigateToLocationSettings: () -> Unit = {}
+    onNavigateToHaccp: () -> Unit = {}
+    // onNavigateToLocationSettings eliminado - configuración GPS solo desde WebPanel
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -87,7 +88,14 @@ fun MarcacionesScreen(
     LaunchedEffect(Unit) {
         fichadoViewModel.inicializarDatos()
         
-        // Cargar configuración de ubicación guardada
+        // Sincronizar configuración GPS del backend
+        // Esta configuración es establecida por Admin/Supervisor desde el WebPanel
+        fichadoViewModel.sincronizarConfiguracionGPS()
+        
+        // Esperar un momento para que se sincronice y luego cargar
+        delay(500)
+        
+        // Cargar configuración de ubicación guardada (ahora viene del backend)
         try {
             val savedConfig = preferencesManager.getLocationConfig().first()
             if (savedConfig != null) {
@@ -266,15 +274,16 @@ fun MarcacionesScreen(
             }
         }
         
-        // Botón de configuración de ubicación
-        OutlinedButton(
-            onClick = onNavigateToLocationSettings,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Configurar Ubicación de Fichado")
-        }
+        // Botón de configuración de ubicación - ELIMINADO
+        // La configuración GPS ahora se realiza únicamente desde el WebPanel por Admins/Supervisores
+        // OutlinedButton(
+        //     onClick = onNavigateToLocationSettings,
+        //     modifier = Modifier.fillMaxWidth()
+        // ) {
+        //     Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
+        //     Spacer(modifier = Modifier.width(8.dp))
+        //     Text("Configurar Ubicación de Fichado")
+        // }
         
         // Mapa visual de ubicación objetivo
         Card(

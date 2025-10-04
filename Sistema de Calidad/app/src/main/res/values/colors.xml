@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Colores base -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Colores principales del tema HACCP - Esquema profesional -->
+    <color name="primary">#1976D2</color>          <!-- Azul profesional -->
+    <color name="primary_dark">#1565C0</color>     <!-- Azul oscuro -->
+    <color name="primary_light">#BBDEFB</color>    <!-- Azul claro -->
+    
+    <color name="secondary">#388E3C</color>        <!-- Verde HACCP (calidad/conformidad) -->
+    <color name="secondary_dark">#2E7D32</color>   <!-- Verde oscuro -->
+    <color name="secondary_light">#C8E6C9</color>  <!-- Verde claro -->
+    
+    <color name="accent">#FF9800</color>           <!-- Naranja (atención/advertencia) -->
+    
+    <!-- Colores de estado -->
+    <color name="success">#4CAF50</color>          <!-- Verde éxito -->
+    <color name="warning">#FFA726</color>          <!-- Naranja advertencia -->
+    <color name="error">#EF5350</color>            <!-- Rojo error -->
+    <color name="info">#29B6F6</color>             <!-- Azul información -->
+    
+    <!-- Colores de fondo -->
+    <color name="background">#F5F5F5</color>       <!-- Gris claro fondo -->
+    <color name="surface">#FFFFFF</color>          <!-- Blanco superficie -->
+    
+    <!-- Colores de texto -->
+    <color name="text_primary">#212121</color>     <!-- Negro texto principal -->
+    <color name="text_secondary">#757575</color>   <!-- Gris texto secundario -->
+    <color name="text_hint">#BDBDBD</color>        <!-- Gris hint -->
 </resources>

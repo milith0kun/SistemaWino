@@ -26,7 +26,7 @@ const Footer = () => {
           {/* Sistema Info */}
           <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <CodeIcon /> Sistema HACCP Wino
+              <CodeIcon /> Sistema HACCP
             </Typography>
             <Typography variant="body2" color="rgba(255,255,255,0.7)">
               Sistema de Control de Calidad y Asistencias

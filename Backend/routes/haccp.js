@@ -116,28 +116,43 @@ router.post('/recepcion-mercaderia', authenticateToken, async (req, res) => {
 // Obtener historial de recepciones
 router.get('/recepcion-mercaderia', authenticateToken, async (req, res) => {
     try {
-        const { tipo_control, fecha_inicio, fecha_fin, limite = 50 } = req.query;
+        const { tipo, tipo_control, mes, anio, fecha_inicio, fecha_fin, limite = 100 } = req.query;
 
         let query = 'SELECT * FROM control_recepcion_mercaderia WHERE 1=1';
         const params = [];
 
-        if (tipo_control) {
+        // Filtrar por tipo (tipo_control o tipo - ambos aceptados)
+        const tipoFiltro = tipo || tipo_control;
+        if (tipoFiltro) {
             query += ' AND tipo_control = ?';
-            params.push(tipo_control);
+            params.push(tipoFiltro);
         }
 
-        if (fecha_inicio) {
+        // Filtrar por mes y año (prioridad)
+        if (mes && anio) {
+            // Convertir mes y año a formato de fecha
+            const mesStr = String(mes).padStart(2, '0');
+            query += ' AND strftime("%m", fecha) = ? AND strftime("%Y", fecha) = ?';
+            params.push(mesStr);
+            params.push(String(anio));
+        } else if (fecha_inicio && fecha_fin) {
+            // Fallback: filtrar por rango de fechas
+            query += ' AND fecha >= ? AND fecha <= ?';
+            params.push(fecha_inicio);
+            params.push(fecha_fin);
+        } else if (fecha_inicio) {
             query += ' AND fecha >= ?';
             params.push(fecha_inicio);
-        }
-
-        if (fecha_fin) {
+        } else if (fecha_fin) {
             query += ' AND fecha <= ?';
             params.push(fecha_fin);
         }
 
         query += ' ORDER BY fecha DESC, hora DESC LIMIT ?';
         params.push(parseInt(limite));
+
+        console.log('Query recepcion-mercaderia:', query);
+        console.log('Params:', params);
 
         const registros = await db.all(query, params);
 
@@ -258,6 +273,45 @@ router.post('/recepcion-abarrotes', authenticateToken, async (req, res) => {
     }
 });
 
+// GET /recepcion-abarrotes - Obtener registros de recepción de abarrotes
+router.get('/recepcion-abarrotes', authenticateToken, async (req, res) => {
+    try {
+        const registros = await db.all(`
+            SELECT 
+                ra.*,
+                u.nombre || ' ' || u.apellido as responsable_nombre,
+                s.nombre || ' ' || s.apellido as supervisor_nombre
+            FROM recepcion_abarrotes ra
+            LEFT JOIN usuarios u ON ra.responsable_registro_id = u.id
+            LEFT JOIN usuarios s ON ra.supervisor_id = s.id
+            ORDER BY ra.fecha DESC, ra.hora DESC
+            LIMIT 100
+        `);
+
+        res.json({
+            success: true,
+            data: registros || []
+        });
+    } catch (error) {
+        console.error('Error obteniendo recepción de abarrotes:', error);
+        
+        // Si la tabla no existe, devolver array vacío
+        if (error.code === 'SQLITE_ERROR' && error.message.includes('no such table')) {
+            return res.json({
+                success: true,
+                data: [],
+                message: 'Tabla de recepción de abarrotes no creada aún'
+            });
+        }
+        
+        res.status(500).json({
+            success: false,
+            error: 'Error al obtener registros',
+            details: error.message
+        });
+    }
+});
+
 // =====================================================
 // 2. CONTROL DE COCCIÓN
 // =====================================================
@@ -363,17 +417,25 @@ router.post('/control-coccion', authenticateToken, (req, res) => {
 // Obtener historial de cocciones
 router.get('/control-coccion', authenticateToken, async (req, res) => {
     try {
-        const { fecha_inicio, fecha_fin, limite = 50 } = req.query;
+        const { mes, anio, fecha_inicio, fecha_fin, limite = 100 } = req.query;
 
         let query = 'SELECT * FROM control_coccion WHERE 1=1';
         const params = [];
 
-        if (fecha_inicio) {
+        // Filtrar por mes y año (prioridad)
+        if (mes && anio) {
+            const mesStr = String(mes).padStart(2, '0');
+            query += ' AND strftime("%m", fecha) = ? AND strftime("%Y", fecha) = ?';
+            params.push(mesStr);
+            params.push(String(anio));
+        } else if (fecha_inicio && fecha_fin) {
+            query += ' AND fecha >= ? AND fecha <= ?';
+            params.push(fecha_inicio);
+            params.push(fecha_fin);
+        } else if (fecha_inicio) {
             query += ' AND fecha >= ?';
             params.push(fecha_inicio);
-        }
-
-        if (fecha_fin) {
+        } else if (fecha_fin) {
             query += ' AND fecha <= ?';
             params.push(fecha_fin);
         }
@@ -506,17 +568,25 @@ router.post('/lavado-frutas', authenticateToken, (req, res) => {
 // Obtener historial de lavado de frutas
 router.get('/lavado-frutas', authenticateToken, (req, res) => {
     try {
-        const { fecha_inicio, fecha_fin, limite = 50 } = req.query;
+        const { mes, anio, fecha_inicio, fecha_fin, limite = 100 } = req.query;
 
         let query = 'SELECT * FROM control_lavado_desinfeccion_frutas WHERE 1=1';
         const params = [];
 
-        if (fecha_inicio) {
+        // Filtrar por mes y año (prioridad)
+        if (mes && anio) {
+            const mesStr = String(mes).padStart(2, '0');
+            query += ' AND strftime("%m", fecha) = ? AND strftime("%Y", fecha) = ?';
+            params.push(mesStr);
+            params.push(String(anio));
+        } else if (fecha_inicio && fecha_fin) {
+            query += ' AND fecha >= ? AND fecha <= ?';
+            params.push(fecha_inicio);
+            params.push(fecha_fin);
+        } else if (fecha_inicio) {
             query += ' AND fecha >= ?';
             params.push(fecha_inicio);
-        }
-
-        if (fecha_fin) {
+        } else if (fecha_fin) {
             query += ' AND fecha <= ?';
             params.push(fecha_fin);
         }
@@ -723,17 +793,25 @@ router.post('/lavado-manos', authenticateToken, (req, res) => {
 // Obtener historial de lavado de manos
 router.get('/lavado-manos', authenticateToken, (req, res) => {
     try {
-        const { fecha_inicio, fecha_fin, area_estacion, limite = 50 } = req.query;
+        const { mes, anio, fecha_inicio, fecha_fin, area_estacion, limite = 100 } = req.query;
 
         let query = 'SELECT * FROM control_lavado_manos WHERE 1=1';
         const params = [];
 
-        if (fecha_inicio) {
+        // Filtrar por mes y año (prioridad)
+        if (mes && anio) {
+            const mesStr = String(mes).padStart(2, '0');
+            query += ' AND strftime("%m", fecha) = ? AND strftime("%Y", fecha) = ?';
+            params.push(mesStr);
+            params.push(String(anio));
+        } else if (fecha_inicio && fecha_fin) {
+            query += ' AND fecha >= ? AND fecha <= ?';
+            params.push(fecha_inicio);
+            params.push(fecha_fin);
+        } else if (fecha_inicio) {
             query += ' AND fecha >= ?';
             params.push(fecha_inicio);
-        }
-
-        if (fecha_fin) {
+        } else if (fecha_fin) {
             query += ' AND fecha <= ?';
             params.push(fecha_fin);
         }
@@ -918,7 +996,7 @@ router.post('/temperatura-camaras', authenticateToken, (req, res) => {
 // Obtener historial de temperaturas
 router.get('/temperatura-camaras', authenticateToken, (req, res) => {
     try {
-        const { fecha_inicio, fecha_fin, camara_id, limite = 50 } = req.query;
+        const { mes, anio, fecha_inicio, fecha_fin, camara_id, limite = 100 } = req.query;
 
         let query = `
             SELECT t.*, c.nombre as camara_nombre, c.tipo as camara_tipo,
@@ -929,12 +1007,20 @@ router.get('/temperatura-camaras', authenticateToken, (req, res) => {
         `;
         const params = [];
 
-        if (fecha_inicio) {
+        // Filtrar por mes y año (prioridad)
+        if (mes && anio) {
+            const mesStr = String(mes).padStart(2, '0');
+            query += ' AND strftime("%m", t.fecha) = ? AND strftime("%Y", t.fecha) = ?';
+            params.push(mesStr);
+            params.push(String(anio));
+        } else if (fecha_inicio && fecha_fin) {
+            query += ' AND t.fecha >= ? AND t.fecha <= ?';
+            params.push(fecha_inicio);
+            params.push(fecha_fin);
+        } else if (fecha_inicio) {
             query += ' AND t.fecha >= ?';
             params.push(fecha_inicio);
-        }
-
-        if (fecha_fin) {
+        } else if (fecha_fin) {
             query += ' AND t.fecha <= ?';
             params.push(fecha_fin);
         }

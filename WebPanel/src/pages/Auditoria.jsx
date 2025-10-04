@@ -39,11 +39,15 @@ const Auditoria = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await auditoriaService.getLogs(fechaDesde, fechaHasta);
-      setLogs(data);
+      const response = await auditoriaService.getLogs(fechaDesde, fechaHasta);
+      
+      // Extraer el array 'data' de la respuesta {success: true, data: []}
+      const logsData = response?.data && Array.isArray(response.data) ? response.data : [];
+      setLogs(logsData);
     } catch (err) {
       setError('Error al cargar logs de auditoría');
       console.error(err);
+      setLogs([]); // Asegurar que siempre sea un array
     } finally {
       setLoading(false);
     }

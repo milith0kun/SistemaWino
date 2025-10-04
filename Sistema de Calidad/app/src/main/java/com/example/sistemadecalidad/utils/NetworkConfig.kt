@@ -91,11 +91,14 @@ object NetworkConfig {
         const val TEMP_ALIMENTOS_CREATE = "temperatura-alimentos/registrar"
     }
     
-    // Configuración GPS según especificaciones del backend
+    // Configuración GPS - SOLO VALORES DE FALLBACK
+    // IMPORTANTE: La configuración GPS se gestiona ÚNICAMENTE desde el WebPanel
+    // Estos valores solo se usan si el backend no responde o no tiene configuración guardada
+    // Los Admins/Supervisores deben configurar la ubicación desde http://18.188.209.94/configuracion
     object GPSConfig {
-        const val KITCHEN_LATITUDE = -12.0464
-        const val KITCHEN_LONGITUDE = -77.0428
-        const val GPS_RADIUS_METERS = 100.0
+        const val KITCHEN_LATITUDE = -12.0464  // Fallback: Lima, Perú
+        const val KITCHEN_LONGITUDE = -77.0428  // Fallback: Lima, Perú
+        const val GPS_RADIUS_METERS = 100.0    // Fallback: 100 metros
     }
     
     // Credenciales por defecto según especificaciones del backend

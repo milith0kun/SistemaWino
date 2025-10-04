@@ -9,6 +9,45 @@ const { authenticateToken } = require('../middleware/auth');
 const bcrypt = require('bcryptjs');
 
 // =====================================================
+// OBTENER SOLO SUPERVISORES (Para formularios HACCP)
+// =====================================================
+router.get('/supervisores/lista', authenticateToken, async (req, res) => {
+    try {
+        console.log('=== GET /api/usuarios/supervisores/lista ===');
+        console.log('Usuario solicitante:', req.user);
+
+        // Solo devolver usuarios con rol SUPERVISOR activos (NO ADMIN)
+        // Los formularios HACCP deben ser llenados por empleados y supervisados por SUPERVISORES
+        const supervisores = await db.all(`
+            SELECT 
+                id,
+                nombre,
+                apellido,
+                email,
+                cargo,
+                area,
+                rol
+            FROM usuarios
+            WHERE rol = 'SUPERVISOR' AND activo = 1
+            ORDER BY nombre ASC
+        `);
+
+        res.json({
+            success: true,
+            data: supervisores,
+            message: `${supervisores.length} supervisor(es) disponible(s)`
+        });
+
+    } catch (error) {
+        console.error('Error al obtener supervisores:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Error al obtener lista de supervisores'
+        });
+    }
+});
+
+// =====================================================
 // OBTENER TODOS LOS USUARIOS (Solo admin)
 // =====================================================
 router.get('/', authenticateToken, async (req, res) => {

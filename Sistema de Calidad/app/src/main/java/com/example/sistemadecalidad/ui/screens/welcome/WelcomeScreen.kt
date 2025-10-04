@@ -22,9 +22,11 @@ fun WelcomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Espacio superior para bajar el contenido
+        Spacer(modifier = Modifier.weight(0.3f))
+        
         // Título principal centrado
         Text(
             text = "Bienvenido, seleccione el tipo de login:",
@@ -73,7 +75,8 @@ fun WelcomeScreen(
             )
         }
         
-        Spacer(modifier = Modifier.weight(1f))
+        // Espacio inferior para mantener el balance
+        Spacer(modifier = Modifier.weight(0.7f))
         
         // Enlaces inferiores
         Column(

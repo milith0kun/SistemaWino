@@ -186,6 +186,17 @@ interface ApiService {
         @Query("area") area: String? = null,
         @Query("turno") turno: String? = null
     ): Response<EmpleadosResponse>
+    
+    // ========== CONFIGURACIÓN ==========
+    
+    /**
+     * Obtener configuración GPS para fichado
+     * GET /configuracion/gps
+     */
+    @GET("configuracion/gps")
+    suspend fun obtenerConfiguracionGPS(
+        @Header("Authorization") token: String
+    ): Response<ConfiguracionGPSResponse>
 }
 
 /**
@@ -541,4 +552,47 @@ data class Empleado(
     
     @SerializedName("activo")
     val activo: Boolean
+)
+
+/**
+ * Respuesta para configuración GPS
+ */
+data class ConfiguracionGPSResponse(
+    @SerializedName("success")
+    val success: Boolean,
+    
+    @SerializedName("data")
+    val data: ConfiguracionGPSData?,
+    
+    @SerializedName("message")
+    val message: String?,
+    
+    @SerializedName("error")
+    val error: String?
+)
+
+/**
+ * Datos de configuración GPS
+ */
+data class ConfiguracionGPSData(
+    @SerializedName("id")
+    val id: Int?,
+    
+    @SerializedName("latitud")
+    val latitud: Double?,
+    
+    @SerializedName("longitud")
+    val longitud: Double?,
+    
+    @SerializedName("radio_metros")
+    val radioMetros: Int?,
+    
+    @SerializedName("nombre")
+    val nombre: String?,
+    
+    @SerializedName("created_at")
+    val createdAt: String?,
+    
+    @SerializedName("updated_at")
+    val updatedAt: String?
 )

@@ -65,11 +65,23 @@ const Dashboard = () => {
       console.log('Dashboard response:', response);
       
       if (response && response.success) {
-        // Asegurarse de que productos_rechazados_detalle sea un array
+        // Validar y normalizar todos los arrays y datos
         const dashboardData = {
           ...response.data,
           productos_rechazados_detalle: Array.isArray(response.data?.productos_rechazados_detalle) 
             ? response.data.productos_rechazados_detalle 
+            : [],
+          productos_rechazados_semana: Array.isArray(response.data?.productos_rechazados_detalle)
+            ? response.data.productos_rechazados_detalle.length
+            : 0,
+          empleados_hoy: Array.isArray(response.data?.empleados_hoy)
+            ? response.data.empleados_hoy
+            : [],
+          no_conformidades_por_tipo: Array.isArray(response.data?.no_conformidades_por_tipo)
+            ? response.data.no_conformidades_por_tipo
+            : [],
+          asistencias_semana: Array.isArray(response.data?.asistencias_semana)
+            ? response.data.asistencias_semana
             : []
         };
         setData(dashboardData);

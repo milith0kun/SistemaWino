@@ -11,9 +11,11 @@ import Asistencias from './pages/Asistencias';
 import Usuarios from './pages/Usuarios';
 import Reportes from './pages/Reportes';
 import Auditoria from './pages/Auditoria';
+import Configuracion from './pages/Configuracion';
 
 // HACCP Pages
 import RecepcionMercaderia from './pages/HACCP/RecepcionMercaderia';
+import RecepcionAbarrotes from './pages/HACCP/RecepcionAbarrotes';
 import ControlCoccion from './pages/HACCP/ControlCoccion';
 import LavadoFrutas from './pages/HACCP/LavadoFrutas';
 import LavadoManos from './pages/HACCP/LavadoManos';
@@ -264,9 +266,11 @@ function App() {
               <Route path="usuarios" element={<Usuarios />} />
               <Route path="reportes" element={<Reportes />} />
               <Route path="auditoria" element={<Auditoria />} />
+              <Route path="configuracion" element={<Configuracion />} />
               
               {/* HACCP Routes */}
               <Route path="haccp/recepcion-mercaderia" element={<RecepcionMercaderia />} />
+              <Route path="haccp/recepcion-abarrotes" element={<RecepcionAbarrotes />} />
               <Route path="haccp/control-coccion" element={<ControlCoccion />} />
               <Route path="haccp/lavado-frutas" element={<LavadoFrutas />} />
               <Route path="haccp/lavado-manos" element={<LavadoManos />} />

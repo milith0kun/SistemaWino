@@ -1,7 +1,7 @@
 // Utilidad para validación GPS - HACCP System
 // Verifica si el usuario está dentro del rango permitido para fichar
 
-const { CONFIG_UNIVERSAL } = require('../config-app-universal');
+const { config: CONFIG_UNIVERSAL } = require('../config-app-universal');
 const { db } = require('./database');
 
 /**
@@ -29,9 +29,9 @@ function getGPSConfig() {
                 console.log('📍 Tabla configuracion_gps no existe, usando valores desde .env');
                 // Fallback a configuración por defecto
                 const fallbackConfig = {
-                    latitude: CONFIG_UNIVERSAL.gps.kitchenLatitude,
-                    longitude: CONFIG_UNIVERSAL.gps.kitchenLongitude,
-                    radiusMeters: CONFIG_UNIVERSAL.gps.radiusMeters
+                    latitude: CONFIG_UNIVERSAL.gps.latitude || -12.0464,
+                    longitude: CONFIG_UNIVERSAL.gps.longitude || -77.0428,
+                    radiusMeters: CONFIG_UNIVERSAL.gps.maxDistance || 100
                 };
                 console.log('📍 Configuración GPS desde .env:', fallbackConfig);
                 resolve(fallbackConfig);
@@ -49,9 +49,9 @@ function getGPSConfig() {
                 // No hay configuración en BD, usar valores por defecto
                 console.log('No hay configuración GPS en BD, usando valores por defecto');
                 const fallbackConfig = {
-                    latitude: CONFIG_UNIVERSAL.gps.kitchenLatitude,
-                    longitude: CONFIG_UNIVERSAL.gps.kitchenLongitude,
-                    radiusMeters: CONFIG_UNIVERSAL.gps.radiusMeters
+                    latitude: CONFIG_UNIVERSAL.gps.latitude || -12.0464,
+                    longitude: CONFIG_UNIVERSAL.gps.longitude || -77.0428,
+                    radiusMeters: CONFIG_UNIVERSAL.gps.maxDistance || 100
                 };
                 resolve(fallbackConfig);
             }

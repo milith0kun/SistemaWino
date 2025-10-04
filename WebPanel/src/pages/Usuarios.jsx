@@ -33,8 +33,10 @@ import {
   Lock as LockIcon,
 } from '@mui/icons-material';
 import { usuariosService } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const Usuarios = () => {
+  const { user: currentUser } = useAuth();
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -159,7 +161,19 @@ const Usuarios = () => {
   };
 
   const handleDeleteUser = async (userId) => {
-    if (!window.confirm('¿Está seguro de eliminar este usuario?')) {
+    // Verificar si intenta eliminar su propia cuenta
+    // Convertir ambos a número para comparación segura
+    const currentUserId = currentUser ? parseInt(currentUser.id) : null;
+    const targetUserId = parseInt(userId);
+    
+    console.log('Intentando eliminar usuario:', { currentUserId, targetUserId, currentUser });
+    
+    if (currentUserId && currentUserId === targetUserId) {
+      setError('No puedes eliminar tu propia cuenta');
+      return;
+    }
+
+    if (!window.confirm('¿Está seguro de desactivar este usuario? Esta acción desactivará el usuario pero no eliminará sus registros.')) {
       return;
     }
 
@@ -168,17 +182,24 @@ const Usuarios = () => {
       setError('');
       setSuccess('');
       
+      console.log('Llamando a usuariosService.delete con ID:', userId);
       const response = await usuariosService.delete(userId);
+      console.log('Respuesta del servidor:', response);
       
       if (response.success) {
-        setSuccess('Usuario eliminado correctamente');
+        setSuccess('Usuario desactivado correctamente');
         loadUsuarios();
       } else {
-        setError(response.error || 'Error eliminando usuario');
+        setError(response.error || 'Error desactivando usuario');
+        console.error('Error en la respuesta:', response);
       }
     } catch (err) {
-      setError('Error de conexión al servidor');
-      console.error(err);
+      // Capturar el error específico del backend
+      console.error('Error completo al eliminar usuario:', err);
+      console.error('Error response:', err.response);
+      console.error('Error data:', err.response?.data);
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || 'Error de conexión al servidor';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -340,14 +361,17 @@ const Usuarios = () => {
                           <LockIcon />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip title="Eliminar">
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={() => handleDeleteUser(usuario.id)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
+                      <Tooltip title={currentUser && parseInt(currentUser.id) === parseInt(usuario.id) ? "No puedes eliminar tu propia cuenta" : "Desactivar Usuario"}>
+                        <span>
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => handleDeleteUser(usuario.id)}
+                            disabled={currentUser && parseInt(currentUser.id) === parseInt(usuario.id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </span>
                       </Tooltip>
                     </TableCell>
                   </TableRow>

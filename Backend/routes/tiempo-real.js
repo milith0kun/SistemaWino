@@ -2,51 +2,14 @@
 // Proporciona información de tiempo actualizada para el frontend
 
 const express = require('express');
+const { getTimeInfo } = require('../utils/timeUtils');
 const router = express.Router();
 
 // GET /api/tiempo-real/ahora - Obtener fecha y hora actual del servidor
 router.get('/ahora', (req, res) => {
     try {
-        const ahora = new Date();
-        
-        // Información básica de tiempo
-        const tiempoInfo = {
-            timestamp: ahora.toISOString(),
-            fecha: ahora.toISOString().split('T')[0], // YYYY-MM-DD
-            hora: ahora.toTimeString().split(' ')[0], // HH:MM:SS
-            
-            // Información detallada en español
-            fecha_completa: ahora.toLocaleDateString('es-ES', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            }),
-            
-            hora_12h: ahora.toLocaleTimeString('es-ES', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: true
-            }),
-            
-            dia_semana: ahora.toLocaleDateString('es-ES', { weekday: 'long' }),
-            mes: ahora.toLocaleDateString('es-ES', { month: 'long' }),
-            año: ahora.getFullYear(),
-            
-            // Información numérica
-            dia_numero: ahora.getDate(),
-            mes_numero: ahora.getMonth() + 1,
-            dia_semana_numero: ahora.getDay(), // 0 = Domingo
-            
-            // Zona horaria
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            timezone_offset: ahora.getTimezoneOffset(),
-            
-            // Timestamps útiles
-            unix_timestamp: Math.floor(ahora.getTime() / 1000),
-            milliseconds: ahora.getTime()
-        };
+        // Usar utilidades centralizadas para obtener información de tiempo en zona horaria de Perú
+        const tiempoInfo = getTimeInfo();
 
         res.json({
             success: true,

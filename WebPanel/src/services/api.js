@@ -166,6 +166,11 @@ export const usuariosService = {
     return response.data;
   },
 
+  getSupervisores: async () => {
+    const response = await api.get('/usuarios/supervisores/lista');
+    return response.data;
+  },
+
   create: async (usuario) => {
     const response = await api.post('/usuarios', usuario);
     return response.data;
@@ -223,6 +228,27 @@ export const reportesService = {
 
   getTemperaturasAlerta: async () => {
     const response = await api.get('/reportes/temperaturas-alerta');
+    return response.data;
+  },
+};
+
+// =====================================================
+// CONFIGURACIÓN DEL SISTEMA
+// =====================================================
+
+export const configuracionService = {
+  getGPS: async () => {
+    const response = await api.get('/configuracion/gps');
+    return response.data;
+  },
+
+  updateGPS: async (config) => {
+    const response = await api.post('/configuracion/gps', config);
+    return response.data;
+  },
+
+  getRoles: async () => {
+    const response = await api.get('/configuracion/roles');
     return response.data;
   },
 };

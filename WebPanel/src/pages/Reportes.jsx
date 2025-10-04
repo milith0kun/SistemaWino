@@ -33,10 +33,14 @@ const Reportes = () => {
       setLoading(true);
       setError(null);
       
-      const [ncData, provData] = await Promise.all([
+      const [ncResponse, provResponse] = await Promise.all([
         reportesService.getNoConformidades(mes, anio),
         reportesService.getProveedoresNC(mes, anio)
       ]);
+      
+      // Extraer el array 'data' de la respuesta {success: true, data: []}
+      const ncData = ncResponse?.data && Array.isArray(ncResponse.data) ? ncResponse.data : [];
+      const provData = provResponse?.data && Array.isArray(provResponse.data) ? provResponse.data : [];
       
       setNoConformidades(ncData);
       setProveedores(provData);
@@ -71,11 +75,11 @@ const Reportes = () => {
     return tipos[tipo] || tipo;
   };
 
-  const chartData = noConformidades.map(item => ({
+  const chartData = Array.isArray(noConformidades) ? noConformidades.map(item => ({
     name: formatTipoControl(item.tipo_control).replace('Control de ', ''),
     'No Conformidades': item.no_conformidades,
     'Total Registros': item.total_registros,
-  }));
+  })) : [];
 
   return (
     <Box>

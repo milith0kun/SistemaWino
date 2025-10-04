@@ -15,6 +15,8 @@ import {
   CircularProgress,
   Alert,
   Chip,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import { Download as DownloadIcon } from '@mui/icons-material';
 import { fichadoService } from '../services/api';
@@ -22,6 +24,8 @@ import { exportarAsistencias } from '../utils/exportExcel';
 import { format } from 'date-fns';
 
 const Asistencias = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -73,15 +77,24 @@ const Asistencias = () => {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" fontWeight="bold">
+      <Box 
+        display="flex" 
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between" 
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        gap={2}
+        mb={3}
+      >
+        <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold">
           Asistencias
         </Typography>
         <Button
           variant="contained"
-          startIcon={<DownloadIcon />}
+          startIcon={!isMobile && <DownloadIcon />}
           onClick={handleExportar}
           disabled={data.length === 0}
+          fullWidth={isMobile}
+          size={isMobile ? "medium" : "large"}
         >
           Exportar a Excel
         </Button>
@@ -155,12 +168,12 @@ const Asistencias = () => {
               ) : (
                 data.map((row, index) => (
                   <TableRow key={index} hover>
-                    <TableCell>{format(new Date(row.fecha), 'dd/MM/yyyy')}</TableCell>
-                    <TableCell>{row.nombre} {row.apellido}</TableCell>
-                    <TableCell>{row.cargo || '-'}</TableCell>
-                    <TableCell>{row.area || '-'}</TableCell>
-                    <TableCell>{row.hora_entrada || '-'}</TableCell>
-                    <TableCell>{row.hora_salida || '-'}</TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>{format(new Date(row.fecha), 'dd/MM/yyyy')}</TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.nombre} {row.apellido}</TableCell>
+                    {!isMobile && <TableCell>{row.cargo || '-'}</TableCell>}
+                    {!isMobile && <TableCell>{row.area || '-'}</TableCell>}
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.hora_entrada || '-'}</TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.hora_salida || '-'}</TableCell>
                     <TableCell>{row.horas_trabajadas ? `${row.horas_trabajadas}h` : '-'}</TableCell>
                     <TableCell>
                       <Chip
@@ -169,7 +182,7 @@ const Asistencias = () => {
                         size="small"
                       />
                     </TableCell>
-                    <TableCell>{row.metodo_fichado || '-'}</TableCell>
+                    {!isMobile && <TableCell>{row.metodo_fichado || '-'}</TableCell>}
                   </TableRow>
                 ))
               )}

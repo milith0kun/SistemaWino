@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sistemadecalidad.ui.viewmodel.AuthViewModel
 import com.example.sistemadecalidad.ui.viewmodel.FichadoViewModel
-import java.text.SimpleDateFormat
+import com.example.sistemadecalidad.utils.TimeUtils
 import java.util.*
 import kotlinx.coroutines.delay
 
@@ -46,6 +46,7 @@ fun DashboardScreen(
     onNavigateToMarcaciones: () -> Unit = {},
     onNavigateToHistorial: () -> Unit = {},
     onNavigateToHaccp: () -> Unit = {},
+    onNavigateToAbout: () -> Unit = {},
     onLogout: () -> Unit = {},
     authViewModel: AuthViewModel, // = hiltViewModel(),
     fichadoViewModel: FichadoViewModel // = hiltViewModel()
@@ -58,10 +59,10 @@ fun DashboardScreen(
     val dashboardHoy by fichadoViewModel.dashboardHoy.collectAsStateWithLifecycle()
     val fichadoState by fichadoViewModel.uiState.collectAsStateWithLifecycle()
     
-    // Actualizar hora cada segundo
+    // Actualizar hora cada segundo usando zona horaria de Perú
     LaunchedEffect(Unit) {
         while (true) {
-            currentTime = Date()
+            currentTime = TimeUtils.getCurrentPeruDate()
             delay(1000L)
         }
     }
@@ -71,13 +72,13 @@ fun DashboardScreen(
         fichadoViewModel.inicializarDatos()
     }
     
-    // Formatear fecha y hora actual en tiempo real
+    // Formatear fecha y hora actual en tiempo real usando zona horaria de Perú
     val fechaActual = remember(currentTime) {
-        SimpleDateFormat("EEEE, dd 'de' MMMM", Locale("es", "ES")).format(currentTime)
+        TimeUtils.formatDateForDisplay(currentTime)
     }
     
     val horaActual = remember(currentTime) {
-        SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(currentTime)
+        TimeUtils.formatTimeForDisplay(currentTime)
     }
     
     Scaffold(
@@ -191,26 +192,6 @@ fun DashboardScreen(
                         onDismissRequest = { showMenu = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Ajustes") },
-                            onClick = { 
-                                showMenu = false
-                                // TODO: Navegar a ajustes
-                            },
-                            leadingIcon = {
-                                Icon(Icons.Default.Settings, contentDescription = null)
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Mant. Huella") },
-                            onClick = { 
-                                showMenu = false
-                                // TODO: Navegar a mantenimiento de huella
-                            },
-                            leadingIcon = {
-                                Icon(Icons.Default.Person, contentDescription = null)
-                            }
-                        )
-                        DropdownMenuItem(
                             text = { Text("Mi Perfil") },
                             onClick = { 
                                 showMenu = false
@@ -221,20 +202,10 @@ fun DashboardScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Novedades") },
-                            onClick = { 
-                                showMenu = false
-                                // TODO: Navegar a novedades
-                            },
-                            leadingIcon = {
-                                Icon(Icons.Default.Info, contentDescription = null)
-                            }
-                        )
-                        DropdownMenuItem(
                             text = { Text("Acerca de") },
                             onClick = { 
                                 showMenu = false
-                                // TODO: Navegar a acerca de
+                                onNavigateToAbout()
                             },
                             leadingIcon = {
                                 Icon(Icons.Default.Info, contentDescription = null)

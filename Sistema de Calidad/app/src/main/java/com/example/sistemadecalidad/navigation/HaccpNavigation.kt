@@ -17,7 +17,8 @@ import com.example.sistemadecalidad.ui.screens.historial.HistorialScreen
 import com.example.sistemadecalidad.ui.screens.login.LoginScreen
 import com.example.sistemadecalidad.ui.screens.marcaciones.MarcacionesScreen
 import com.example.sistemadecalidad.ui.screens.settings.NetworkSettingsScreen
-import com.example.sistemadecalidad.ui.screens.settings.LocationSettingsScreen
+// import com.example.sistemadecalidad.ui.screens.settings.LocationSettingsScreen // ELIMINADO - configuración GPS solo desde WebPanel
+import com.example.sistemadecalidad.ui.screens.about.AboutScreen
 import com.example.sistemadecalidad.ui.screens.welcome.WelcomeScreen
 import com.example.sistemadecalidad.ui.screens.haccp.HaccpMenuScreen
 import com.example.sistemadecalidad.ui.screens.haccp.RecepcionMercaderiaScreen
@@ -111,6 +112,9 @@ fun HaccpNavigation(
                 onNavigateToHaccp = {
                     navController.navigate(NavigationDestinations.HACCP_MENU)
                 },
+                onNavigateToAbout = {
+                    navController.navigate(NavigationDestinations.ABOUT)
+                },
                 onLogout = {
                     navController.navigate(NavigationDestinations.LOGIN) {
                         popUpTo(0) { inclusive = true }
@@ -135,10 +139,8 @@ fun HaccpNavigation(
                 },
                 onNavigateToHaccp = {
                     navController.navigate(NavigationDestinations.HACCP_MENU)
-                },
-                onNavigateToLocationSettings = {
-                    navController.navigate(NavigationDestinations.LOCATION_SETTINGS)
                 }
+                // onNavigateToLocationSettings eliminado - configuración GPS solo desde WebPanel
             )
         }
         
@@ -192,9 +194,19 @@ fun HaccpNavigation(
             )
         }
         
-        // Pantalla de configuración de ubicación
-        composable(NavigationDestinations.LOCATION_SETTINGS) {
-            LocationSettingsScreen(
+        // Pantalla de configuración de ubicación - ELIMINADA
+        // La configuración GPS ahora se realiza únicamente desde el WebPanel por Admins/Supervisores
+        // composable(NavigationDestinations.LOCATION_SETTINGS) {
+        //     LocationSettingsScreen(
+        //         onNavigateBack = {
+        //             navController.popBackStack()
+        //         }
+        //     )
+        // }
+        
+        // Pantalla Acerca de
+        composable(NavigationDestinations.ABOUT) {
+            AboutScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }

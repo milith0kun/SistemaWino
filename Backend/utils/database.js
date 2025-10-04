@@ -183,27 +183,48 @@ const insertDefaultUsers = async () => {
     });
 };
 
-// Wrappers con promesas para db
-const dbAsync = {
-    all: (sql, params = []) => {
+// Wrappers híbridos: soportan tanto promesas como callbacks
+const dbHybrid = {
+    all: (sql, params, callback) => {
+        // Si hay callback, usar modo callback
+        if (typeof callback === 'function') {
+            return db.all(sql, params, callback);
+        }
+        // Si params es función, es el callback
+        if (typeof params === 'function') {
+            return db.all(sql, [], params);
+        }
+        // Modo promesa
         return new Promise((resolve, reject) => {
-            db.all(sql, params, (err, rows) => {
+            db.all(sql, params || [], (err, rows) => {
                 if (err) reject(err);
                 else resolve(rows || []);
             });
         });
     },
-    get: (sql, params = []) => {
+    get: (sql, params, callback) => {
+        if (typeof callback === 'function') {
+            return db.get(sql, params, callback);
+        }
+        if (typeof params === 'function') {
+            return db.get(sql, [], params);
+        }
         return new Promise((resolve, reject) => {
-            db.get(sql, params, (err, row) => {
+            db.get(sql, params || [], (err, row) => {
                 if (err) reject(err);
                 else resolve(row);
             });
         });
     },
-    run: (sql, params = []) => {
+    run: (sql, params, callback) => {
+        if (typeof callback === 'function') {
+            return db.run(sql, params, callback);
+        }
+        if (typeof params === 'function') {
+            return db.run(sql, [], params);
+        }
         return new Promise((resolve, reject) => {
-            db.run(sql, params, function(err) {
+            db.run(sql, params || [], function(err) {
                 if (err) reject(err);
                 else resolve({ lastID: this.lastID, changes: this.changes });
             });
@@ -212,7 +233,7 @@ const dbAsync = {
 };
 
 module.exports = {
-    db: dbAsync, // Exportar versión con promesas
-    dbRaw: db,   // Exportar versión raw por si se necesita
+    db: dbHybrid, // Exportar versión híbrida (promesas + callbacks)
+    dbRaw: db,    // Exportar versión raw sqlite3
     initializeDatabase
 };
