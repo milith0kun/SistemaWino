@@ -218,30 +218,36 @@ router.get('/historial', authenticateToken, (req, res) => {
 
         const query = `
             SELECT 
-                id,
-                fecha,
-                hora_entrada,
-                hora_salida,
+                a.id,
+                a.fecha,
+                a.hora_entrada,
+                a.hora_salida,
                 CASE 
-                    WHEN hora_entrada IS NOT NULL AND hora_salida IS NOT NULL 
-                    THEN ROUND((julianday(fecha || ' ' || hora_salida) - julianday(fecha || ' ' || hora_entrada)) * 24, 2)
+                    WHEN a.hora_entrada IS NOT NULL AND a.hora_salida IS NOT NULL 
+                    THEN ROUND((julianday(a.fecha || ' ' || a.hora_salida) - julianday(a.fecha || ' ' || a.hora_entrada)) * 24, 2)
                     ELSE NULL 
                 END as horas_trabajadas,
-                latitud,
-                longitud,
-                latitud_salida,
-                longitud_salida,
-                metodo_fichado,
-                observaciones,
-                timestamp_creacion,
+                a.latitud,
+                a.longitud,
+                a.latitud_salida,
+                a.longitud_salida,
+                a.metodo_fichado,
+                a.observaciones,
+                a.timestamp_creacion,
                 CASE 
-                    WHEN latitud IS NOT NULL AND longitud IS NOT NULL 
+                    WHEN a.latitud IS NOT NULL AND a.longitud IS NOT NULL 
                     THEN 'GPS_DISPONIBLE'
                     ELSE 'SIN_GPS'
-                END as estado_gps
-            FROM asistencia 
-            ${whereClause}
-            ORDER BY fecha DESC, hora_entrada DESC
+                END as estado_gps,
+                u.nombre,
+                u.apellido,
+                u.cargo,
+                u.area,
+                u.email
+            FROM asistencia a
+            INNER JOIN usuarios u ON a.usuario_id = u.id
+            ${whereClause.replace('WHERE usuario_id', 'WHERE a.usuario_id')}
+            ORDER BY a.fecha DESC, a.hora_entrada DESC
             LIMIT ? OFFSET ?
         `;
 
@@ -257,7 +263,7 @@ router.get('/historial', authenticateToken, (req, res) => {
             }
 
             // Obtener total de registros para paginación
-            const countQuery = `SELECT COUNT(*) as total FROM asistencia ${whereClause}`;
+            const countQuery = `SELECT COUNT(*) as total FROM asistencia a ${whereClause.replace('WHERE usuario_id', 'WHERE a.usuario_id')}`;
             const countParams = queryParams.slice(0, -2); // Remover limite y offset
 
             db.get(countQuery, countParams, (err, countResult) => {

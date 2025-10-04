@@ -33,6 +33,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import Collapse from '@mui/material/Collapse';
+import Footer from './Footer';
 
 const drawerWidth = 280;
 
@@ -324,14 +325,18 @@ const Layout = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           minHeight: '100vh',
           backgroundColor: '#F8F9FA',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <Toolbar />
-        <Outlet />
+        <Box sx={{ flexGrow: 1, p: 3 }}>
+          <Outlet />
+        </Box>
+        <Footer />
       </Box>
     </Box>
   );
