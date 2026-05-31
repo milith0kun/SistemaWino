@@ -1,14 +1,10 @@
 providers = ["node"]
 
-[phases.setup]
-nixPkgs = ["nodejs-18_x", "npm-9_x"]
-cmds = ["useradd -m -s /bin/bash node || true"]
-
 [phases.install]
-cmds = ["npm install"]
+cmds = ["npm install --legacy-peer-deps"]
 
 [phases.build]
-cmds = ["npm run build", "chown -R node:node /app || true"]
+cmds = ["npm run build"]
 
 [start]
-cmd = "su -p node -c \"PATH=$PATH npm run start\""
+cmd = "npm run start"
