@@ -8,5 +8,5 @@ cmds = ["npm install", "npm install -g serve"]
 [phases.build]
 cmds = ["npm run build", "chown -R node:node /app || true"]
 
-[phases.start]
-cmds = ["su -p node -c \"PATH=$PATH serve -s dist -l 3000\""]
+[start]
+cmd = "su -p node -c \"PATH=$PATH npx serve -s dist -l 3000\""
